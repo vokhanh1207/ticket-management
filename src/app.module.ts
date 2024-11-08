@@ -20,18 +20,20 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     EventsModule,
     AuthModule,
     ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
+    // TypeOrmModule.forRoot(
+    //   {
+    //     type: 'postgres',
+    //     host: 'localhost',
+    //     port: 5432,
+    //     username: 'postgres',
+    //     password: '123456',
+    //     database: 'tickets-management',
+    //     autoLoadEntities: true,
+    //     synchronize: true,
+    //     entities: [__dirname + '/../**/*.entity.js']
+    //   }
+    // ),
     TypeOrmModule.forRootAsync(
-      // {
-      //   type: 'postgres',
-      //   host: 'localhost',
-      //   port: 5432,
-      //   username: 'postgres',
-      //   password: '123456',
-      //   database: 'tickets-management',
-      //   autoLoadEntities: true,
-      //   synchronize: true,
-      //   entities: [__dirname + '/../**/*.entity.js']
-      // }
       {
         useFactory: (configService: ConfigService) => ({
           type: 'postgres',
