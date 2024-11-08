@@ -1,0 +1,45 @@
+<div class="container" style="color: black;">
+  <div>
+    {{#if event}}
+    <div class="d-flex justify-content-between">
+      <h2 class="text-primary">
+        {{event.name}}
+      </h2>
+      {{#if user}}
+      <div class="">
+        <a href="{{event.id}}/tickets" class="btn btn-primary btn-block mb-4">
+          <i class="fa fa-list-ol" aria-hidden="true"></i>
+        </a>
+        <a href="{{event.id}}/edit" class="btn btn-primary btn-block mb-4">
+          <i class="fa fa-pencil" aria-hidden="true"></i>
+        </a>
+      </div>
+      {{/if}}
+    </div>
+
+    <div class="text-secondery mt-3">
+      <i class="fa fa-calendar-check-o text-primary" aria-hidden="true" style="width: 20px;"></i>
+      <span class="fw-lighter fst-italic">{{event.startTime}}</span>
+    </div>
+    <div class="mt-2">
+      <i class="fa fa-map-marker text-primary " aria-hidden="true" style="width: 20px;"></i>
+      <span class="fw-lighter fst-italic">{{event.location}}</span>
+    </div>
+
+    <div class="mt-5">
+      {{event.description}}
+    </div>
+    {{/if}}
+  </div>
+  <form action="{{event.id}}/register" method="post" class="mt-5 d-flex flex-column w-100">
+
+    <label for="exampleInputEmail1" class="form-label fs-2">Register this event</label>
+    <div class="mb-3">
+      <input type="email" placeholder="Email" id="email" class="form-control" name="email" required />
+    </div>
+
+    <!-- Submit button -->
+    <button type="submit" class="btn btn-primary btn-block mb-4">Register</button>
+
+  </form>
+</div>

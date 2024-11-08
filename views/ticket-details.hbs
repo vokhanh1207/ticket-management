@@ -1,0 +1,54 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.js"
+  integrity="sha512-is1ls2rgwpFZyixqKFEExPHVUUL+pPkBEPw47s/6NDQ4n1m6T/ySeDW3p54jp45z2EJ0RSOgilqee1WhtelXfA=="
+  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<div class="container" style="color: black;">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="text-center">
+        {{#if message}}
+        <div>
+          <i class="fa fa-ban mb-3" aria-hidden="true" style="font-size: 80px; color: red"></i>
+        </div>
+        <h2>{{message}}</h2>
+        {{else}}
+        <div class="d-flex justify-content-center mb-3">
+          <div id="qrcode">
+            <img src="{{ticket.qr}}">
+          </div>
+        </div>
+        {{/if}}
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="">
+        {{#if event}}
+        <a href="/events/{{event.id}}">
+          <h2>{{event.name}}</h2>
+        </a><br />
+
+        <div class="text-secondery">
+          <i class="fa fa-calendar-check-o text-primary" aria-hidden="true" style="width: 20px;"></i>
+          <span class="fw-lighter ">{{event.startTime}}</span>
+        </div>
+        <div class="mt-2">
+          <i class="fa fa-map-marker text-primary " aria-hidden="true" style="width: 20px;"></i>
+          <span class="fw-lighter">{{event.location}}</span>
+        </div>
+        {{/if}}
+      </div>
+      <div class="">
+        {{#if ticket}}
+        <div class="mt-2">
+          <i class="fa fa-envelope text-primary " aria-hidden="true" style="width: 20px;"></i>
+          <span class="fw-lighter">{{ticket.email}}</span>
+        </div>
+        <div class="mt-2">
+          <i class="fa fa-qrcode text-primary " aria-hidden="true" style="width: 20px;"></i>
+          <span class="fw-lighter">{{ticket.id}}</span>
+        </div>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+</div>

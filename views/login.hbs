@@ -1,0 +1,42 @@
+<div class="login-page"></div>
+
+<div class="container">
+  <div class="d-flex justify-content-center">
+    <div class="card" style="max-width: 100%; width: 400px; background: none; color: white;">
+      <div class="card-body" style="background: #232323a3;">
+        <form action="auth/login" method="post">
+          <h4 class="mb-3">Login</h4>
+          {{#if message}}
+          <div class="mt-3 mb-3 alert alert-danger" role="alert">
+            {{message}}
+          </div>
+          {{/if}}
+          <!-- SDT input -->
+          <div class="form-outline mb-4">
+            <label class="form-label" for="username">Username </label>
+            <input type="text" id="username" class="form-control" name="username" />
+          </div>
+
+          <!-- Password input -->
+          <div class="form-outline mb-4">
+            <label class="form-label" for="password">Password</label>
+            <input type="password" id="password" class="form-control" name="password" />
+          </div>
+
+          <!-- 2 column grid layout for inline styling -->
+          {{!-- <div class="row mb-4">
+            <div class="col d-flex justify-content-end">
+              <!-- Simple link -->
+              <a href="#!">Forgot password?</a>
+            </div>
+          </div> --}}
+
+          <!-- Submit button -->
+          <button type="submit" class="btn btn-primary btn-block mb-4">Đăng nhập</button>
+
+        </form>
+      </div>
+    </div>
+
+  </div>
+</div>

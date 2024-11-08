@@ -1,0 +1,35 @@
+<div class="container">
+  <div class="d-flex justify-content-between mb-3">
+    <h2>Tickets</h2>
+    <button  class="btn btn-primary btn-block">
+      <i class="fa fa-paper-plane-o" aria-hidden="true"></i>
+    </button>
+  </div>
+  <div class="">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Email</th>
+          <th scope="col">Created At</th>
+          <th scope="col">Status</th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each tickets}}
+        <tr>
+          <th scope="row">
+            {{@index}}</th>
+          <td>{{this.email}}</td>
+          <td>{{this.createdAt}}</td>
+          <td>{{this.status}}</td>
+          <td><a href="/tickets/{{this.id}}">Details</a></td>
+        </tr>
+        {{/each}}
+
+
+      </tbody>
+    </table>
+  </div>
+</div>

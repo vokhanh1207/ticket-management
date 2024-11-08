@@ -1,0 +1,52 @@
+<div class="container">
+  <div class="d-flex justify-content-between mb-3">
+    <h2>
+      {{#if event}}
+      Update event
+      {{else}}
+      New event
+      {{/if}} </h2>
+  </div>
+  <div class="">
+    <form action="{{#if event}}edit{{else}}/events/new{{/if}}" method="post">
+      <div class="mb-3">
+        <label for="name" class="form-label">Event name</label>
+        <input type="text" placeholder="name" id="name" class="form-control" name="name" required {{#if event}}
+          value="{{event.name}}" {{/if}} />
+      </div>
+      <div class="mb-3">
+        <label for="startTime" class="form-label">Start time</label>
+        <input type="datetime-local" placeholder="startTime" id="startTime" class="form-control" name="startTime"
+          required {{#if event}} value="{{event.startTime}}" {{/if}} />
+      </div>
+      <div class="mb-3">
+        <label for="location" class="form-label">Location</label>
+        <input type="text" placeholder="location" id="location" class="form-control" name="location" {{#if event}}
+          value="{{event.location}}" {{/if}} />
+      </div>
+      <div class="mb-3">
+        <label for="duration" class="form-label">Duration</label>
+        <input type="text" placeholder="duration" id="duration" class="form-control" name="duration" {{#if event}}
+          value="{{event.duration}}" {{/if}} />
+      </div>
+      <div class="mb-3">
+        <label for="description" class="form-label">Description</label>
+
+        <textarea type="text" placeholder="description" id="description" class="form-control" name="description">{{#if event}}{{event.description}}{{/if}}  
+        </textarea>
+      </div>
+
+
+      <!-- Submit button -->
+      <button type="submit" class="btn btn-primary">
+        {{#if event}}
+        Update event
+        {{else}}
+        Add event
+        {{/if}}
+      </button>
+
+    </form>
+
+  </div>
+</div>

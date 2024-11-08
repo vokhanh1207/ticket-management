@@ -1,0 +1,37 @@
+<div class="container">
+  <div class="justify-content-center">
+    <div class="d-flex justify-content-between">
+      <h2>Events</h2>
+      {{#if user.username}}
+        <a href="events/new" class="btn btn-primary btn-block mb-4">New event</a>
+      {{/if}}
+    </div>
+
+    <div>
+      <div class="row">
+        
+        {{#each events}}
+        <div class="col-md-4 mb-3">
+          <div class="card">
+            <div style="height: 140px;" class="card-img-top event-item" ></div>
+            <div class="card-body">
+              <h5 class="card-title">{{this.name}}</h5>
+              <div class="text-secondery mt-3">
+                <i class="fa fa-calendar-check-o text-primary" aria-hidden="true" style="width: 20px;"></i>
+                <span class="fw-lighter fst-italic">{{this.startTime}}</span>
+              </div>
+              <div class="mt-2 mb-3">
+                <i class="fa fa-map-marker text-primary " aria-hidden="true" style="width: 20px;"></i>
+                <span class="fw-lighter fst-italic">{{this.location}}</span>
+              </div>
+              <a href="events/{{this.id}}" class="btn-primary">
+                Details
+              </a>
+            </div>
+          </div>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+  </div>
+</div>
