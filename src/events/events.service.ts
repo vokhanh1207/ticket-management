@@ -17,33 +17,36 @@ export class EventsService {
         private eventsRepository: EventsRepository,
         private ticketRepository: TicketsRepository,
         private ticketsService: TicketsService
-    ) {}
+    ) { }
 
     async getEventById(id: string): Promise<Event> {
-        const found = await this.eventsRepository.findOneBy({id})
-        if (!found) {
-            throw new NotFoundException(`Event with ID "${id}" not found`);
-        }
+        try {
 
-        return found;
+            const found = await this.eventsRepository.findOneBy({ id })
+            return found;
+        } catch (error) {
+            return null;
+        }
     }
 
     async getTicketsByEventId(eventId: string): Promise<Ticket[]> {
-        const tickets = await this.ticketRepository.find({where: {eventId}});
+        const tickets = await this.ticketRepository.find({ where: { eventId } });
 
         return tickets;
     }
 
     async getEvents(): Promise<Event[]> {
-        const events = await this.eventsRepository.find({where: {
-            startTime: MoreThan(new Date())
-        }});
+        const events = await this.eventsRepository.find({
+            where: {
+                startTime: MoreThan(new Date())
+            }
+        });
 
         return events;
     }
 
     async createEvent(createEventDto: CreateEventDto, username: string): Promise<Event> {
-        
+
         const event: Event = this.eventsRepository.create({
             name: createEventDto.name,
             description: createEventDto.description,
@@ -72,6 +75,8 @@ export class EventsService {
 
     async regisiterEvent(createTicketDto: CreateTicketDto, host): Promise<Ticket> {
         const dbEvent = await this.getEventById(createTicketDto.eventId);
-        return await this.ticketsService.createTicket(createTicketDto, dbEvent, host);
+        const validateResult = await this.ticketsService.validateRegisterEmail(createTicketDto.eventId, createTicketDto.email);
+
+        return validateResult ? await this.ticketsService.createTicket(createTicketDto, dbEvent, host) : null;
     }
 }

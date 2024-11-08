@@ -31,11 +31,14 @@
     </div>
     {{/if}}
   </div>
-  <form action="{{event.id}}/register" method="post" class="mt-5 d-flex flex-column w-100">
+  <form action="/events/{{event.id}}/register" method="post" class="mt-5 d-flex flex-column w-100">
 
     <label for="exampleInputEmail1" class="form-label fs-2">Register this event</label>
     <div class="mb-3">
-      <input type="email" placeholder="Email" id="email" class="form-control" name="email" required />
+      <input type="email" placeholder="Email" id="email" class="form-control {{#if message}}is-invalid{{/if}}" name="email" required />
+      <div id="validationServer05Feedback" class="invalid-feedback">
+        {{#if message}}{{message}}{{/if}}
+      </div>
     </div>
 
     <!-- Submit button -->

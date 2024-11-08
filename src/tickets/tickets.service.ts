@@ -76,6 +76,12 @@ export class TicketsService {
         return tickets;
     }
 
+    async validateRegisterEmail(eventId: string, email: string): Promise<boolean> {
+        const ticket = await this.ticketsRepository.find({ where: { eventId, email } })
+
+        return ticket ? false : true;
+    }
+
     getNextAction(ticket: Ticket): TicketAction {
         let action = TicketAction.CheckIn;
         if (ticket.status === TicketStatus.CheckedIn) {
@@ -95,7 +101,7 @@ export class TicketsService {
             <div style="margin-bottom: 20px; text-align:center; font-size: 22px;">
                 ${event.name}
             </div>
-            <div style="margin-bottom: 10px">
+            <div style="margin-bottom: 10px; text-align:center;">
                 <img src="${ticket.qr}" />
             </div>
             <div style="margin-bottom: 10px">
@@ -109,7 +115,6 @@ export class TicketsService {
             </div>
         </div>
         `
-        console.log('qr ', ticket.qr)
 
         return options;
     }

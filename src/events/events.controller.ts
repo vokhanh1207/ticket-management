@@ -45,6 +45,9 @@ export class EventsController {
     @Get(':eventId')
     async getEvent(@Res() res: Response, @Req() req: Request) {
         const event = await this.eventsService.getEventById(req.params?.eventId);
+        if(!event) {
+            return res.render('not-found', { event, user: req.user });
+        }
         return res.render('event-details', { event, user: req.user });
     }
 
@@ -83,7 +86,12 @@ export class EventsController {
         @Headers() headers) {
         createTicketDto.eventId = req.params?.eventId;
         const ticket = await this.eventsService.regisiterEvent(createTicketDto, headers);
-        return res.redirect('/tickets/' + ticket.id);
+        if (ticket) {
+            return res.redirect('/tickets/' + ticket.id);
+        } else {
+            const event = await this.eventsService.getEventById(req.params?.eventId);
+            return res.render('event-details', { event, user: req.user, message: 'The email provided has already been registered for this event.' });
+        }
     }
 
     //@Get('/:id')

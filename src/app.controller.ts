@@ -10,10 +10,11 @@ export class AppController {
 
   @Get()
   getLandingPage(@Res() res: Response, @Req() req: Request) {
-    if (req.user) {
-      return res.redirect('/events');
-    }
-    return res.render('login', { user: req.user });
+    return res.redirect('/events');
   }
 
+  @Get('login')
+  login(@Res() res: Response, @Req() req: Request) {
+    return res.render('login', { user: req.user });
+  }
 }
