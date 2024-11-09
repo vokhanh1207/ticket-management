@@ -1,14 +1,8 @@
-import { Event } from './dto/event.entity';
-import { Body, Controller, forwardRef, Get, Inject, Param, Post, Req, Res, Headers } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, Res, Headers } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { Response, Request } from 'express';
-import { TicketsService } from 'src/tickets/tickets.service';
 import { CreateTicketDto } from 'src/tickets/dto/create-ticket.dto';
-import { AuthGuard } from '@nestjs/passport';
-import { User } from 'src/auth/user.entity';
-import { GetUser } from 'src/auth/get-user.decorator';
-import { LocalAuthGuard } from 'src/auth/local-auth.guard';
 
 @Controller('events')
 export class EventsController {
@@ -51,6 +45,22 @@ export class EventsController {
         return res.render('event-details', { event, user: req.user });
     }
 
+    @Post(':eventId')
+    async registerEvent(
+        @Body() createTicketDto: CreateTicketDto,
+        @Req() req: Request,
+        @Res() res: Response,
+        @Headers() headers) {
+        createTicketDto.eventId = req.params?.eventId;
+        const ticket = await this.eventsService.regisiterEvent(createTicketDto, headers);
+        if (ticket) {
+            return res.redirect('/tickets/' + ticket.id);
+        } else {
+            const event = await this.eventsService.getEventById(req.params?.eventId);
+            return res.render('event-details', { event, user: req.user, message: 'The email provided has already been registered for this event.' });
+        }
+    }
+
     @Get(':eventId/edit')
     async showEditEvent(@Res() res: Response, @Req() req: Request) {
         if (!req.user) {
@@ -75,38 +85,12 @@ export class EventsController {
             return res.redirect('../' + req.params?.eventId)
         }
         const tickets = await this.eventsService.getTicketsByEventId(req.params?.eventId);
-        return res.render('tickets', { tickets, user: req.user });
+        return res.render('tickets', { tickets, user: req.user, eventId: req.params?.eventId });
     }
 
-    @Post(':eventId/register')
-    async registerEvent(
-        @Body() createTicketDto: CreateTicketDto,
-        @Req() req: Request,
-        @Res() res: Response,
-        @Headers() headers) {
-        createTicketDto.eventId = req.params?.eventId;
-        const ticket = await this.eventsService.regisiterEvent(createTicketDto, headers);
-        if (ticket) {
-            return res.redirect('/tickets/' + ticket.id);
-        } else {
-            const event = await this.eventsService.getEventById(req.params?.eventId);
-            return res.render('event-details', { event, user: req.user, message: 'The email provided has already been registered for this event.' });
-        }
+
+    @Get(':eventId/remind')
+    async remindTickets(eventId: string, @Headers() headers): Promise<boolean> {
+        return await this.eventsService.sendRemindEmails(eventId, headers);
     }
-
-    //@Get('/:id')
-    // getEvent(@Param('id') id: string): Promise<Event> {
-    //     //return this.ticketsService.getEventById(id);
-    // }
-
-    // @Get('event/:id')
-    // getEvents(eventId: string): Promise<Event[]> {
-    //     return this.ticketsService.getTicketByEventId(eventId);
-    // }
-
-    // @Post()
-    // createEvent(@Body() createTicketDto: CreateEventDto): Promise<Event> {
-
-    //     //return this.ticketsService.createEvent(createTicketDto);
-    // }
 }

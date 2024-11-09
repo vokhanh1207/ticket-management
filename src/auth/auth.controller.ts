@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Post, Req, Res, Session, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, Inject, Post, Req, Res, Session, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthCredentialsDto, CreateUserDto } from './dto/auth-credentials.dto';
 import { User } from './user.entity';
@@ -12,7 +12,7 @@ export class AuthController {
     constructor(@Inject('AUTH_SERVICE') private authService: AuthService) { }
 
     @Post('/signup')
-    async signUp(@Body() createUserDto: CreateUserDto): Promise<void> {
+    async signUp(@Body() createUserDto: CreateUserDto): Promise<User | HttpException> {
         return this.authService.signUp(createUserDto);
     }
 

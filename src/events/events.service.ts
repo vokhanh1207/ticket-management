@@ -1,12 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { Injectable } from '@nestjs/common';
 import { CreateEventDto } from './dto/create-event.dto';
 import { Event } from './dto/event.entity';
 import { EventsRepository } from './events.repository';
 import { MoreThan } from "typeorm"
 import { TicketsRepository } from 'src/tickets/tickets.repository';
 import { Ticket } from 'src/tickets/dto/ticket.entity';
-import { User } from 'src/auth/user.entity';
 import { CreateTicketDto } from 'src/tickets/dto/create-ticket.dto';
 import { TicketsService } from 'src/tickets/tickets.service';
 import * as fs from 'fs'
@@ -78,5 +76,10 @@ export class EventsService {
         const validateResult = await this.ticketsService.validateRegisterEmail(createTicketDto.eventId, createTicketDto.email);
 
         return validateResult ? await this.ticketsService.createTicket(createTicketDto, dbEvent, host) : null;
+    }
+
+    async sendRemindEmails(eventId: string, header): Promise<boolean> {
+        const event = await this.getEventById(eventId);
+        return this.ticketsService.sendRemindEmails(event, header)
     }
 }

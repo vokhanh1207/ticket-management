@@ -35,3 +35,28 @@ header {
     top: 0;
     opacity: 0.8;
 }
+
+.status {
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+}
+
+.status-CREATED {
+    background-color: RGBA(var(--bs-warning-rgb),var(--bs-bg-opacity,1))!important;
+}
+
+.status-CHECKED-IN {
+    color: #fff!important;
+    background-color: RGBA(var(--bs-info-rgb),var(--bs-bg-opacity,1))!important;
+}
+
+.status-USED {
+    background-color: RGBA(var(--bs-danger-rgb),var(--bs-bg-opacity,1))!important;
+}
+
+.status-EXPIRED {
+    background-color: RGBA(var(--bs-success-rgb),var(--bs-bg-opacity,1))!important;
+}

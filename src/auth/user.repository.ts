@@ -1,6 +1,6 @@
 import { DataSource, Repository } from "typeorm";
 import { User } from "./user.entity";
-import { ConflictException, Injectable, InternalServerErrorException } from "@nestjs/common";
+import { ConflictException, HttpException, Injectable, InternalServerErrorException } from "@nestjs/common";
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from "./dto/auth-credentials.dto";
 
@@ -10,7 +10,7 @@ export class UserRepository extends Repository<User> {
         super(User, dataSource.createEntityManager());
     }
 
-    async createUser(authCredentialDto: CreateUserDto): Promise<void> {
+    async createUser(authCredentialDto: CreateUserDto): Promise<User | HttpException> {
         const salt = await bcrypt.genSalt();
         const username = authCredentialDto.username;
         const firstName = authCredentialDto.firstName;
@@ -27,7 +27,7 @@ export class UserRepository extends Repository<User> {
         });
 
         try {
-            await this.save(user);
+            return await this.save(user);
         } catch (error) {
             if (error.code === '23505') {
                 //duplicate user

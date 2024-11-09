@@ -1,5 +1,5 @@
 import { ConfigService } from '@nestjs/config';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as QRCode from 'qrcode';
@@ -9,6 +9,7 @@ import { TicketAction, TicketStatus } from './constants';
 import { MailService } from 'src/mail/mail.service';
 import { ISendMailOptions } from '@nestjs-modules/mailer';
 import { Event } from 'src/events/dto/event.entity';
+import { EventsService } from 'src/events/events.service';
 
 @Injectable()
 export class TicketsService {
@@ -62,15 +63,22 @@ export class TicketsService {
         return ticket;
     }
 
-    async sendRemindEmail(event: Event, host): Promise<void> {
-        // const eventId = event.id;
-
-        // const mailOptions = this.getTicketMailOptions(dbTicket, event, host)
-        // this.mailService.sendMail(mailOptions);
-        // return ticket;
+    async sendRemindEmails(event: Event, host): Promise<boolean> {
+        try {
+            this.getTicketsByEventId(event.id).then((tickets = []) => {
+                const removeDuplicates = [...new Map(tickets.map(item => [item['email'], item])).values()];
+                removeDuplicates.forEach(ticket => {
+                    const mailOptions = this.getRemindMailOptions(ticket, event, host)
+                    this.mailService.sendMail(mailOptions);
+                })
+            });
+            return true;
+        } catch (error) {
+            throw new InternalServerErrorException()
+        }
     }
 
-    async getTicketByEventId(eventId: string): Promise<Ticket[]> {
+    async getTicketsByEventId(eventId: string): Promise<Ticket[]> {
         const tickets = this.ticketsRepository.find({ where: { eventId } })
 
         return tickets;
@@ -96,6 +104,34 @@ export class TicketsService {
         options.from = `Ticket management <${this.configService.get('EMAIL_USERNAME')}>`
         options.to = ticket.email;
         options.subject = 'Thank you for registering our event'
+        options.html = `
+        <div style="max-width: 600px; font-size: 15px;">
+            <div style="margin-bottom: 20px; text-align:center; font-size: 22px;">
+                ${event.name}
+            </div>
+            <div style="margin-bottom: 10px; text-align:center;">
+                <img src="${ticket.qr}" />
+            </div>
+            <div style="margin-bottom: 10px">
+                <b>Ticket link: </b><a href="${host.origin}/tickets/${ticket.id}">${host.origin}/tickets/${ticket.id}</a>
+            </div>
+            <div style="margin-bottom: 10px">
+                <b>Time: </b>${event.startTime}
+            </div>
+            <div style="margin-bottom: 10px">
+                <b>Location: </b>${event.location}
+            </div>
+        </div>
+        `
+
+        return options;
+    }
+
+    private getRemindMailOptions(ticket: Ticket, event: Event, host) {
+        const options: ISendMailOptions = {};
+        options.from = `Ticket management <${this.configService.get('EMAIL_USERNAME')}>`
+        options.to = ticket.email;
+        options.subject = 'Get Ready! Your Event is Coming Up Soon'
         options.html = `
         <div style="max-width: 600px; font-size: 15px;">
             <div style="margin-bottom: 20px; text-align:center; font-size: 22px;">

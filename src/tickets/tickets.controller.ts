@@ -99,13 +99,9 @@ export class TicketsController {
         })
     }
 
-    @Get('event/:id')
-    getTickets(eventId: string): Promise<Ticket[]> {
-        return this.ticketsService.getTicketByEventId(eventId);
-    }
-
-    // @Post()
-    // createTicket(@Body() createTicketDto: CreateTicketDto, @Headers() headers): Promise<Ticket> {   
-    //     return this.ticketsService.createTicket(createTicketDto, headers.host);
+    // @Get('event/:id')
+    // getTickets(eventId: string): Promise<Ticket[]> {
+    //     return this.ticketsService.getTicketsByEventId(eventId);
     // }
+
 }

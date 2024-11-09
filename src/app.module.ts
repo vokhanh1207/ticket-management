@@ -13,6 +13,7 @@ import { TicketsService } from './tickets/tickets.service';
 import { PassportModule } from '@nestjs/passport';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { UserRepository } from './auth/user.repository';
 
 @Module({
   imports: [
@@ -76,6 +77,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     }),
   ],
   controllers: [AppController],
-  providers: [AppService]
+  providers: [AppService, AuthService, UserRepository]
 })
 export class AppModule { }

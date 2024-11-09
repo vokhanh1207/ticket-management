@@ -1,0 +1,33 @@
+<div class="container">
+  <div class="d-flex justify-content-between mb-3">
+    <h2>Add user</h2>
+  </div>
+  <div class="">
+    <form method="post" action="add-user">
+      <label class="text-danger" for="invalidCheck3">
+        {{message}}
+      </label>
+      <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input type="text" class="form-control" id="username" aria-describedby="username" name="username" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input type="text" class="form-control" id="password" aria-describedby="password" name="password" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="firstname" class="form-label">First name</label>
+        <input type="text" class="form-control" id="firstname" aria-describedby="firstName" name="firstname" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="lastname" class="form-label">Last name</label>
+        <input type="text" class="form-control" id="lastname" aria-describedby="lastName" name="lastname" required>
+      </div>
+
+       <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+  </div>
+</div>
