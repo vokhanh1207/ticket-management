@@ -85,8 +85,7 @@ export class TicketsService {
     }
 
     async validateRegisterEmail(eventId: string, email: string): Promise<boolean> {
-        const ticket = await this.ticketsRepository.find({ where: { eventId, email } })
-
+        const ticket = await this.ticketsRepository.findOne({ where: { eventId, email } });
         return ticket ? false : true;
     }
 
