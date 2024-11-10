@@ -8,7 +8,7 @@
       {{/if}} </h2>
   </div>
   <div class="">
-    <form action="{{#if event}}edit{{else}}/events/new{{/if}}" method="post">
+    <form action="{{#if event}}/events/{{event.id}}/edit{{else}}/events/new{{/if}}" method="post">
       <div class="mb-3">
         <label for="name" class="form-label">Event name</label>
         <input type="text" placeholder="name" id="name" class="form-control" name="name" required {{#if event}}
@@ -17,7 +17,7 @@
       <div class="mb-3">
         <label for="startTime" class="form-label">Start time</label>
         <input type="datetime-local" placeholder="startTime" id="startTime" class="form-control" name="startTime"
-          required {{#if event}} value="{{event.startTime}}" {{/if}} />
+          required {{#if event}} value="{{formatDate event.startTime 'YYYY-MM-DDTHH:mm'}}" {{/if}} />
       </div>
       <div class="mb-3">
         <label for="location" class="form-label">Location</label>

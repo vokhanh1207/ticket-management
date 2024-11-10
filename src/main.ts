@@ -5,6 +5,7 @@ import * as hbs from 'express-handlebars';
 import { join } from 'path';
 import * as session from 'express-session'
 import * as passport from 'passport';
+import * as helpers from './handlebar.helper'
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -22,6 +23,9 @@ async function bootstrap() {
       allowProtoPropertiesByDefault: true,
       allowProtoMethodsByDefault: true,
     },
+    helpers: {
+      ...helpers
+    }
   }));
   app.setViewEngine('hbs');
   app.use(

@@ -27,7 +27,7 @@
           <th scope="row">
             {{@index}}</th>
           <td>{{this.email}}</td>
-          <td>{{this.createdAt}}</td>
+          <td>{{formatDate this.createdAt 'HH:mm, MMM Do YYYY'}}</td>
           <td><span class="status status-{{this.status}}">{{this.status}}</span></td>
           <td><a href="/tickets/{{this.id}}">Details</a></td>
         </tr>

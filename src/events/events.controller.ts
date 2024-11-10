@@ -3,6 +3,7 @@ import { EventsService } from './events.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { Response, Request } from 'express';
 import { CreateTicketDto } from 'src/tickets/dto/create-ticket.dto';
+import * as moment from 'moment' 
 
 @Controller('events')
 export class EventsController {
@@ -75,6 +76,7 @@ export class EventsController {
         if (!req.user) {
             return res.redirect('.');
         }
+        createEventDto.startTime = moment(createEventDto.startTime).toDate().toISOString();
         const event = await this.eventsService.updateEvent(req.params?.eventId, createEventDto);
         return res.render('event-details', { event, user: req.user });
     }

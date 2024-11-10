@@ -1,9 +1,10 @@
-import { Body, Controller, Get, Post, Render, Req, Res } from '@nestjs/common';
+import { Body, Controller, Get, Post, Render, Req, Res, Session, UseGuards } from '@nestjs/common';
 import { AppService } from './app.service';
 import { Response, Request } from 'express';
 import { AuthService } from './auth/auth.service';
 import { User } from './auth/user.entity';
-import { CreateUserDto } from './auth/dto/auth-credentials.dto';
+import { AuthCredentialsDto, CreateUserDto } from './auth/dto/auth-credentials.dto';
+import { LocalAuthGuard } from './auth/local-auth.guard';
 
 @Controller()
 export class AppController {
@@ -19,7 +20,27 @@ export class AppController {
 
   @Get('login')
   login(@Res() res: Response, @Req() req: Request) {
+    if (req.user) {
+      return res.redirect('/events');
+    }
     return res.render('login', { user: req.user });
+  }
+
+  @Post('/login')
+  @UseGuards(LocalAuthGuard)
+  async postLogin(
+      @Body() body: AuthCredentialsDto, 
+      @Res() res: Response, 
+      @Req() req: Request,
+      @Session() session
+  ) {
+      const user = await this.authService.signIn(body);
+      if (user) {
+          session.userId = user.id;
+          return res.redirect('../events');
+      } else {
+          return res.render('login', {message: 'Username or password is incorrect', user: req.user});
+      }
   }
 
   @Get('my-profile')
@@ -45,7 +66,7 @@ export class AppController {
     if (!req.user) {
       return res.redirect('/events');
     }
-    return res.render('add-user');
+    return res.render('add-user', {user: req.user});
   }
 
   @Post('add-user')

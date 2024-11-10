@@ -7,6 +7,7 @@ export class MailService {
 
   async sendMail(mailOptions: ISendMailOptions) {
     try {
+      // for using template: https://stackoverflow.com/questions/56390245/how-to-register-handlebars-intl-helper-in-nestjs-mailer
       await this.mailerService.sendMail({
         to: mailOptions.to,
         from: mailOptions.from, // sender address

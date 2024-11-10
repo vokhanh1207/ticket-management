@@ -21,39 +21,39 @@ import { UserRepository } from './auth/user.repository';
     EventsModule,
     AuthModule,
     ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
-    // TypeOrmModule.forRoot(
-    //   {
-    //     type: 'postgres',
-    //     host: 'localhost',
-    //     port: 5432,
-    //     username: 'postgres',
-    //     password: '123456',
-    //     database: 'tickets-management',
-    //     autoLoadEntities: true,
-    //     synchronize: true,
-    //     entities: [__dirname + '/../**/*.entity.js']
-    //   }
-    // ),
-    TypeOrmModule.forRootAsync(
+    TypeOrmModule.forRoot(
       {
-        useFactory: (configService: ConfigService) => ({
-          type: 'postgres',
-          host: 'dpg-csn4cq9u0jms7380mtug-a.singapore-postgres.render.com',
-          port: 5432,
-          username: 'tickets_management_user',
-          password: configService.get('DB_PASSWORD'),
-          database: 'tickets_management',
-          autoLoadEntities: true,
-          synchronize: true,
-          entities: [__dirname + '/../**/*.entity.js'],
-          extra: {
-            "ssl": {
-              "rejectUnauthorized": false
-            }
-          }
-        }),
-        inject: [ConfigService],
-    }),
+        type: 'postgres',
+        host: 'localhost',
+        port: 5432,
+        username: 'postgres',
+        password: '123456',
+        database: 'tickets-management',
+        autoLoadEntities: true,
+        synchronize: true,
+        entities: [__dirname + '/../**/*.entity.js']
+      }
+    ),
+    // TypeOrmModule.forRootAsync(
+    //   {
+    //     useFactory: (configService: ConfigService) => ({
+    //       type: 'postgres',
+    //       host: 'dpg-csn4cq9u0jms7380mtug-a.singapore-postgres.render.com',
+    //       port: 5432,
+    //       username: 'tickets_management_user',
+    //       password: configService.get('DB_PASSWORD'),
+    //       database: 'tickets_management',
+    //       autoLoadEntities: true,
+    //       synchronize: true,
+    //       entities: [__dirname + '/../**/*.entity.js'],
+    //       extra: {
+    //         "ssl": {
+    //           "rejectUnauthorized": false
+    //         }
+    //       }
+    //     }),
+    //     inject: [ConfigService],
+    // }),
     PassportModule.register({
       session: true
     }),
