@@ -21,6 +21,7 @@ const ticket_entity_1 = require("./dto/ticket.entity");
 const tickets_repository_1 = require("./tickets.repository");
 const constants_1 = require("./constants");
 const mail_service_1 = require("../mail/mail.service");
+const format_date_util_1 = require("../utils.ts/format-date.util");
 let TicketsService = exports.TicketsService = class TicketsService {
     constructor(ticketsRepository, mailService, configService) {
         this.ticketsRepository = ticketsRepository;
@@ -105,7 +106,7 @@ let TicketsService = exports.TicketsService = class TicketsService {
                 <b>Ticket link: </b><a href="${host.origin}/tickets/${ticket.id}">${host.origin}/tickets/${ticket.id}</a>
             </div>
             <div style="margin-bottom: 10px">
-                <b>Time: </b>${formatDate(event.startTime)}
+                <b>Time: </b>${(0, format_date_util_1.formatDate)(event.startTime)}
             </div>
             <div style="margin-bottom: 10px">
                 <b>Location: </b>${event.location}
@@ -131,7 +132,7 @@ let TicketsService = exports.TicketsService = class TicketsService {
                 <b>Ticket link: </b><a href="${host.origin}/tickets/${ticket.id}">${host.origin}/tickets/${ticket.id}</a>
             </div>
             <div style="margin-bottom: 10px">
-                <b>Time: </b>${formatDate(event.startTime)}
+                <b>Time: </b>${(0, format_date_util_1.formatDate)(event.startTime)}
             </div>
             <div style="margin-bottom: 10px">
                 <b>Location: </b>${event.location}

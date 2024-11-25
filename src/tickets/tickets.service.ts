@@ -9,6 +9,7 @@ import { TicketAction, TicketStatus } from './constants';
 import { MailService } from 'src/mail/mail.service';
 import { ISendMailOptions } from '@nestjs-modules/mailer';
 import { Event } from 'src/events/dto/event.entity';
+import { formatDate } from 'src/utils.ts/format-date.util';
 
 @Injectable()
 export class TicketsService {
