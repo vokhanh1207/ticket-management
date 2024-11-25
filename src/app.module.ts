@@ -21,30 +21,13 @@ import { UserRepository } from './auth/user.repository';
     EventsModule,
     AuthModule,
     ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
-    TypeOrmModule.forRoot(
-      {
-        type: 'mysql',
-        host: 'localhost',
-        username: 'khanhvo',
-        password: '123456',
-        database: 'ticket-management',
-        autoLoadEntities: true,
-        synchronize: true,
-        entities: [__dirname + '/../**/*.entity.js'],
-        extra: {
-          "ssl": {
-            "rejectUnauthorized": false
-          }
-        }
-      }
-    ),
     // TypeOrmModule.forRoot(
     //   {
     //     type: 'mysql',
     //     host: 'localhost',
-    //     username: 'backspac673d_root',
-    //     password: 'Bs4X6BQMBfFXnmRxHVfS',
-    //     database: 'backspac673d_ticket_management',
+    //     username: 'khanhvo',
+    //     password: '123456',
+    //     database: 'ticket-management',
     //     autoLoadEntities: true,
     //     synchronize: true,
     //     entities: [__dirname + '/../**/*.entity.js'],
@@ -55,6 +38,23 @@ import { UserRepository } from './auth/user.repository';
     //     }
     //   }
     // ),
+    TypeOrmModule.forRoot(
+      {
+        type: 'mysql',
+        host: 'localhost',
+        username: 'backspac673d_root',
+        password: 'Bs4X6BQMBfFXnmRxHVfS',
+        database: 'backspac673d_ticket_management',
+        autoLoadEntities: true,
+        synchronize: true,
+        entities: [__dirname + '/../**/*.entity.js'],
+        extra: {
+          "ssl": {
+            "rejectUnauthorized": false
+          }
+        }
+      }
+    ),
     // TypeOrmModule.forRootAsync(
     //   {
     //     useFactory: (configService: ConfigService) => ({
