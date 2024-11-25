@@ -21,18 +21,18 @@
       </div>
       <div class="mb-3">
         <label for="location" class="form-label">Location</label>
-        <input type="text" placeholder="location" id="location" class="form-control" name="location" {{#if event}}
+        <input type="text" placeholder="location" id="location" class="form-control" name="location" required {{#if event}}
           value="{{event.location}}" {{/if}} />
       </div>
       <div class="mb-3">
         <label for="duration" class="form-label">Duration</label>
-        <input type="text" placeholder="duration" id="duration" class="form-control" name="duration" {{#if event}}
+        <input type="text" placeholder="duration" id="duration" class="form-control" name="duration" required {{#if event}}
           value="{{event.duration}}" {{/if}} />
       </div>
       <div class="mb-3">
         <label for="description" class="form-label">Description</label>
 
-        <textarea type="text" placeholder="description" id="description" class="form-control" name="description">{{#if event}}{{event.description}}{{/if}}  
+        <textarea type="text" placeholder="description" id="description" class="form-control" required name="description">{{#if event}}{{event.description}}{{/if}}  
         </textarea>
       </div>
 

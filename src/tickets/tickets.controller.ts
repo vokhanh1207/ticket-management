@@ -38,21 +38,28 @@ export class TicketsController {
             return res.redirect(`/tickets/${id}`);
         }
         let ticket = await this.ticketsService.getTicketById(id);
-        let message: string;
+        let message: {value: string; code: string} = {
+            value: '',
+            code: ''
+        };
 
         // if admin and action == update => update checkin time
         if (ticket.status === TicketStatus.Used) {
-            message = `The ticket is already used.`;
+            message.value = `The ticket is already used.`;
+            message.code = 'USED';
         } else if (ticket.status === TicketStatus.Expired) {
-            message = `The ticket is expired.`;
+            message.value = `The ticket is expired.`;
+            message.code = 'EXPIRED';
         } else if (ticket.status === TicketStatus.CheckedIn) {
             ticket.status = TicketStatus.Used;
             ticket = await this.ticketsService.updateTicket(ticket);
-            message = `Checked out.`;
+            message.value = `Checked out.`;
+            message.code = 'CHECKED-OUT';
         } else {
             ticket.status = TicketStatus.CheckedIn;
             ticket = await this.ticketsService.updateTicket(ticket);
-            message = `Verified!`;
+            message.value = `Verified!`;
+            message.code = 'CHECKED-IN';
         }
 
         const action = this.ticketsService.getNextAction(ticket);

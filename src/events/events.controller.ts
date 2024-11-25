@@ -78,7 +78,8 @@ export class EventsController {
         }
         createEventDto.startTime = moment(createEventDto.startTime).toDate().toISOString();
         const event = await this.eventsService.updateEvent(req.params?.eventId, createEventDto);
-        return res.render('event-details', { event, user: req.user });
+    
+        return res.redirect('/events/' + req.params?.eventId);
     }
 
     @Get(':eventId/tickets')

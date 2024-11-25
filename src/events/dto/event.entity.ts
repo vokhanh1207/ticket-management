@@ -15,7 +15,7 @@ export class Event {
     @Column({ nullable: true })
     description?: string;
 
-    @Column({ nullable: true, type: 'timestamptz' })
+    @Column({ nullable: true, type: 'datetime' })
     startTime?: Date;
 
     @Column({ nullable: true })

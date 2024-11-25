@@ -8,9 +8,21 @@
       <div class="text-center">
         {{#if message}}
         <div>
-          <i class="fa fa-ban mb-3" aria-hidden="true" style="font-size: 80px; color: red"></i>
+          {{#ifeq message.code 'CHECKED-IN'}}
+            <i class="fa fa-check-circle-o" aria-hidden="true" style="font-size: 80px; color: rgb(69, 200, 85)"></i>
+          {{/ifeq}}
+          {{#ifeq message.code 'CHECKED-OUT'}}
+            <i class="fa fa-check-circle-o" aria-hidden="true" style="font-size: 80px; color: rgb(69, 200, 85)"></i>
+          {{/ifeq}}
+          {{#ifeq message.code 'USED'}}
+             <i class="fa fa-ban mb-3" aria-hidden="true" style="font-size: 80px; color: red"></i>
+          {{/ifeq}}
+          {{#ifeq message.code 'EXPIRED'}}
+             <i class="fa fa-ban mb-3" aria-hidden="true" style="font-size: 80px; color: red"></i>
+          {{/ifeq}}
+         
         </div>
-        <h2>{{message}}</h2>
+        <h2>{{message.value}}</h2>
         {{else}}
         <div class="d-flex justify-content-center mb-3">
           <div id="qrcode">

@@ -23,37 +23,58 @@ import { UserRepository } from './auth/user.repository';
     ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
     // TypeOrmModule.forRoot(
     //   {
-    //     type: 'postgres',
+    //     type: 'mysql',
     //     host: 'localhost',
-    //     port: 5432,
-    //     username: 'postgres',
+    //     username: 'khanhvo',
     //     password: '123456',
-    //     database: 'tickets-management',
+    //     database: 'ticket-management',
     //     autoLoadEntities: true,
     //     synchronize: true,
-    //     entities: [__dirname + '/../**/*.entity.js']
+    //     entities: [__dirname + '/../**/*.entity.js'],
+    //     extra: {
+    //       "ssl": {
+    //         "rejectUnauthorized": false
+    //       }
+    //     }
     //   }
     // ),
-    TypeOrmModule.forRootAsync(
+    TypeOrmModule.forRoot(
       {
-        useFactory: (configService: ConfigService) => ({
-          type: 'postgres',
-          host: 'dpg-csn4cq9u0jms7380mtug-a.singapore-postgres.render.com',
-          port: 5432,
-          username: 'tickets_management_user',
-          password: configService.get('DB_PASSWORD'),
-          database: 'tickets_management',
-          autoLoadEntities: true,
-          synchronize: true,
-          entities: [__dirname + '/../**/*.entity.js'],
-          extra: {
-            "ssl": {
-              "rejectUnauthorized": false
-            }
+        type: 'mysql',
+        host: 'localhost',
+        username: 'backspac673d_root',
+        password: 'Bs4X6BQMBfFXnmRxHVfS',
+        database: 'backspac673d_ticket_management',
+        autoLoadEntities: true,
+        synchronize: true,
+        entities: [__dirname + '/../**/*.entity.js'],
+        extra: {
+          "ssl": {
+            "rejectUnauthorized": false
           }
-        }),
-        inject: [ConfigService],
-    }),
+        }
+      }
+    ),
+    // TypeOrmModule.forRootAsync(
+    //   {
+    //     useFactory: (configService: ConfigService) => ({
+    //       type: 'postgres',
+    //       host: 'dpg-csn4cq9u0jms7380mtug-a.singapore-postgres.render.com',
+    //       port: 5432,
+    //       username: 'tickets_management_user',
+    //       password: configService.get('DB_PASSWORD'),
+    //       database: 'tickets_management',
+    //       autoLoadEntities: true,
+    //       synchronize: true,
+    //       entities: [__dirname + '/../**/*.entity.js'],
+    //       extra: {
+    //         "ssl": {
+    //           "rejectUnauthorized": false
+    //         }
+    //       }
+    //     }),
+    //     inject: [ConfigService],
+    // }),
     PassportModule.register({
       session: true
     }),
