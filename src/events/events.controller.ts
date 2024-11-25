@@ -94,6 +94,8 @@ export class EventsController {
 
     @Get(':eventId/remind')
     async remindTickets(eventId: string, @Req() req: Request): Promise<boolean> {
+
+        console.log('origin: ', req.get('origin'))
         return await this.eventsService.sendRemindEmails(eventId, req.get('origin'));
     }
 }

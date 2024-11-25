@@ -80,6 +80,7 @@ let EventsController = exports.EventsController = class EventsController {
         return res.render('tickets', { tickets, user: req.user, eventId: req.params?.eventId });
     }
     async remindTickets(eventId, req) {
+        console.log('origin: ', req.get('origin'));
         return await this.eventsService.sendRemindEmails(eventId, req.get('origin'));
     }
 };

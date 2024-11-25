@@ -130,7 +130,7 @@ export class TicketsService {
         const options: ISendMailOptions = {};
         options.from = `Ticket management <${this.configService.get('EMAIL_USERNAME')}>`
         options.to = ticket.email;
-        options.subject = 'Get Ready! Your Event is Coming Up Soon'
+        options.subject = 'Get Ready! Your Event is Coming Up Soon';
         options.html = `
         <div style="max-width: 600px; font-size: 15px;">
             <div style="margin-bottom: 20px; text-align:center; font-size: 22px;">
