@@ -53,7 +53,7 @@ export class EventsController {
         @Res() res: Response,
         @Headers() headers) {
         createTicketDto.eventId = req.params?.eventId;
-        const ticket = await this.eventsService.regisiterEvent(createTicketDto, headers);
+        const ticket = await this.eventsService.regisiterEvent(createTicketDto, req.get('origin'));
         if (ticket) {
             return res.redirect('/tickets/' + ticket.id);
         } else {
@@ -93,7 +93,7 @@ export class EventsController {
 
 
     @Get(':eventId/remind')
-    async remindTickets(eventId: string, @Headers() headers): Promise<boolean> {
-        return await this.eventsService.sendRemindEmails(eventId, headers);
+    async remindTickets(eventId: string, @Req() req: Request): Promise<boolean> {
+        return await this.eventsService.sendRemindEmails(eventId, req.get('origin'));
     }
 }

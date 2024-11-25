@@ -12,8 +12,8 @@ export declare class TicketsService {
     constructor(ticketsRepository: TicketsRepository, mailService: MailService, configService: ConfigService);
     getTicketById(id: string): Promise<Ticket>;
     updateTicket(ticket: Ticket): Promise<Ticket>;
-    createTicket(createTicketDto: CreateTicketDto, event: Event, host: any): Promise<Ticket>;
-    sendRemindEmails(event: Event, host: any): Promise<boolean>;
+    createTicket(createTicketDto: CreateTicketDto, event: Event, origin: string): Promise<Ticket>;
+    sendRemindEmails(event: Event, origin: string): Promise<boolean>;
     getTicketsByEventId(eventId: string): Promise<Ticket[]>;
     validateRegisterEmail(eventId: string, email: string): Promise<boolean>;
     getNextAction(ticket: Ticket): TicketAction;

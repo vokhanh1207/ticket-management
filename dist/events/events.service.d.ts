@@ -15,6 +15,6 @@ export declare class EventsService {
     getEvents(): Promise<Event[]>;
     createEvent(createEventDto: CreateEventDto, username: string): Promise<Event>;
     updateEvent(eventId: string, createEventDto: CreateEventDto): Promise<Event>;
-    regisiterEvent(createTicketDto: CreateTicketDto, host: any): Promise<Ticket>;
-    sendRemindEmails(eventId: string, header: any): Promise<boolean>;
+    regisiterEvent(createTicketDto: CreateTicketDto, origin: string): Promise<Ticket>;
+    sendRemindEmails(eventId: string, origin: string): Promise<boolean>;
 }

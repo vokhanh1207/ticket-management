@@ -35,7 +35,7 @@ export class TicketsService {
         return ticket;
     }
 
-    async createTicket(createTicketDto: CreateTicketDto, event: Event, host): Promise<Ticket> {
+    async createTicket(createTicketDto: CreateTicketDto, event: Event, origin: string): Promise<Ticket> {
         const ticket: Ticket = this.ticketsRepository.create({
             area: createTicketDto.area,
             eventId: createTicketDto.eventId,
@@ -48,27 +48,27 @@ export class TicketsService {
 
         await QRCode.toFile(
             `${process.cwd()}/public/tickets/${event.id}/${ticket.id}.png`,
-            `${host.origin}/tickets/${dbTicket.id}/on-scan`,
+            `${origin}/tickets/${dbTicket.id}/on-scan`,
             {
                 width: 260,
                 margin: 0
             }
         );
-        dbTicket.qr = `${host.origin}/tickets/${event.id}/${ticket.id}.png`;
+        dbTicket.qr = `${origin}/tickets/${event.id}/${ticket.id}.png`;
 
         await this.ticketsRepository.save(dbTicket);
 
-        const mailOptions = this.getTicketMailOptions(dbTicket, event, host);
+        const mailOptions = this.getTicketMailOptions(dbTicket, event, origin);
         this.mailService.sendMail(mailOptions);
         return ticket;
     }
 
-    async sendRemindEmails(event: Event, host): Promise<boolean> {
+    async sendRemindEmails(event: Event, origin: string): Promise<boolean> {
         try {
             this.getTicketsByEventId(event.id).then((tickets = []) => {
                 const removeDuplicates = [...new Map(tickets.map(item => [item['email'], item])).values()];
                 removeDuplicates.forEach(ticket => {
-                    const mailOptions = this.getRemindMailOptions(ticket, event, host);
+                    const mailOptions = this.getRemindMailOptions(ticket, event, origin);
                     this.mailService.sendMail(mailOptions);
                 })
             });
@@ -98,7 +98,7 @@ export class TicketsService {
         return action;
     }
 
-    private getTicketMailOptions(ticket: Ticket, event: Event, host) {
+    private getTicketMailOptions(ticket: Ticket, event: Event, origin: string) {
         const options: ISendMailOptions = {};
         options.from = `Ticket management <${this.configService.get('EMAIL_USERNAME')}>`
         options.to = ticket.email;
@@ -112,7 +112,7 @@ export class TicketsService {
                 <img src="${ticket.qr}" />
             </div>
             <div style="margin-bottom: 10px">
-                <b>Ticket link: </b><a href="${host.origin}/tickets/${ticket.id}">${host.origin}/tickets/${ticket.id}</a>
+                <b>Ticket link: </b><a href="${origin}/tickets/${ticket.id}">${origin}/tickets/${ticket.id}</a>
             </div>
             <div style="margin-bottom: 10px">
                 <b>Time: </b>${formatDate(event.startTime)}
@@ -126,7 +126,7 @@ export class TicketsService {
         return options;
     }
 
-    private getRemindMailOptions(ticket: Ticket, event: Event, host) {
+    private getRemindMailOptions(ticket: Ticket, event: Event, origin: string) {
         const options: ISendMailOptions = {};
         options.from = `Ticket management <${this.configService.get('EMAIL_USERNAME')}>`
         options.to = ticket.email;
@@ -140,7 +140,7 @@ export class TicketsService {
                 <img src="${ticket.qr}" />
             </div>
             <div style="margin-bottom: 10px">
-                <b>Ticket link: </b><a href="${host.origin}/tickets/${ticket.id}">${host.origin}/tickets/${ticket.id}</a>
+                <b>Ticket link: </b><a href="${origin}/tickets/${ticket.id}">${origin}/tickets/${ticket.id}</a>
             </div>
             <div style="margin-bottom: 10px">
                 <b>Time: </b>${formatDate(event.startTime)}

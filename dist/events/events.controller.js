@@ -48,7 +48,7 @@ let EventsController = exports.EventsController = class EventsController {
     }
     async registerEvent(createTicketDto, req, res, headers) {
         createTicketDto.eventId = req.params?.eventId;
-        const ticket = await this.eventsService.regisiterEvent(createTicketDto, headers);
+        const ticket = await this.eventsService.regisiterEvent(createTicketDto, req.get('origin'));
         if (ticket) {
             return res.redirect('/tickets/' + ticket.id);
         }
@@ -79,8 +79,8 @@ let EventsController = exports.EventsController = class EventsController {
         const tickets = await this.eventsService.getTicketsByEventId(req.params?.eventId);
         return res.render('tickets', { tickets, user: req.user, eventId: req.params?.eventId });
     }
-    async remindTickets(eventId, headers) {
-        return await this.eventsService.sendRemindEmails(eventId, headers);
+    async remindTickets(eventId, req) {
+        return await this.eventsService.sendRemindEmails(eventId, req.get('origin'));
     }
 };
 __decorate([
@@ -153,7 +153,7 @@ __decorate([
 ], EventsController.prototype, "getEventTickets", null);
 __decorate([
     (0, common_1.Get)(':eventId/remind'),
-    __param(1, (0, common_1.Headers)()),
+    __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)

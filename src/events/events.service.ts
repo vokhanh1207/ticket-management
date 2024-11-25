@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Headers } from '@nestjs/common';
 import { CreateEventDto } from './dto/create-event.dto';
 import { Event } from './dto/event.entity';
 import { EventsRepository } from './events.repository';
@@ -71,15 +71,15 @@ export class EventsService {
         });
     }
 
-    async regisiterEvent(createTicketDto: CreateTicketDto, host): Promise<Ticket> {
+    async regisiterEvent(createTicketDto: CreateTicketDto, origin: string): Promise<Ticket> {
         const dbEvent = await this.getEventById(createTicketDto.eventId);
         const validateResult = await this.ticketsService.validateRegisterEmail(createTicketDto.eventId, createTicketDto.email);
 
-        return validateResult ? await this.ticketsService.createTicket(createTicketDto, dbEvent, host) : null;
+        return validateResult ? await this.ticketsService.createTicket(createTicketDto, dbEvent, origin) : null;
     }
 
-    async sendRemindEmails(eventId: string, header): Promise<boolean> {
+    async sendRemindEmails(eventId: string, origin: string): Promise<boolean> {
         const event = await this.getEventById(eventId);
-        return this.ticketsService.sendRemindEmails(event, header)
+        return this.ticketsService.sendRemindEmails(event, origin)
     }
 }

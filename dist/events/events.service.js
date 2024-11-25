@@ -63,14 +63,14 @@ let EventsService = exports.EventsService = class EventsService {
             ...createEventDto
         });
     }
-    async regisiterEvent(createTicketDto, host) {
+    async regisiterEvent(createTicketDto, origin) {
         const dbEvent = await this.getEventById(createTicketDto.eventId);
         const validateResult = await this.ticketsService.validateRegisterEmail(createTicketDto.eventId, createTicketDto.email);
-        return validateResult ? await this.ticketsService.createTicket(createTicketDto, dbEvent, host) : null;
+        return validateResult ? await this.ticketsService.createTicket(createTicketDto, dbEvent, origin) : null;
     }
-    async sendRemindEmails(eventId, header) {
+    async sendRemindEmails(eventId, origin) {
         const event = await this.getEventById(eventId);
-        return this.ticketsService.sendRemindEmails(event, header);
+        return this.ticketsService.sendRemindEmails(event, origin);
     }
 };
 exports.EventsService = EventsService = __decorate([

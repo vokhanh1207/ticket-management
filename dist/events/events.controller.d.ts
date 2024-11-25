@@ -13,5 +13,5 @@ export declare class EventsController {
     showEditEvent(res: Response, req: Request): Promise<void>;
     editEvent(res: Response, req: Request, createEventDto: CreateEventDto): Promise<void>;
     getEventTickets(res: Response, req: Request): Promise<void>;
-    remindTickets(eventId: string, headers: any): Promise<boolean>;
+    remindTickets(eventId: string, req: Request): Promise<boolean>;
 }
