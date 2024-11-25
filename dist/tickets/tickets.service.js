@@ -105,7 +105,7 @@ let TicketsService = exports.TicketsService = class TicketsService {
                 <b>Ticket link: </b><a href="${host.origin}/tickets/${ticket.id}">${host.origin}/tickets/${ticket.id}</a>
             </div>
             <div style="margin-bottom: 10px">
-                <b>Time: </b>${event.startTime}
+                <b>Time: </b>${formatDate(event.startTime)}
             </div>
             <div style="margin-bottom: 10px">
                 <b>Location: </b>${event.location}
@@ -131,7 +131,7 @@ let TicketsService = exports.TicketsService = class TicketsService {
                 <b>Ticket link: </b><a href="${host.origin}/tickets/${ticket.id}">${host.origin}/tickets/${ticket.id}</a>
             </div>
             <div style="margin-bottom: 10px">
-                <b>Time: </b>${event.startTime}
+                <b>Time: </b>${formatDate(event.startTime)}
             </div>
             <div style="margin-bottom: 10px">
                 <b>Location: </b>${event.location}

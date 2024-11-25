@@ -9,7 +9,6 @@ import { TicketAction, TicketStatus } from './constants';
 import { MailService } from 'src/mail/mail.service';
 import { ISendMailOptions } from '@nestjs-modules/mailer';
 import { Event } from 'src/events/dto/event.entity';
-import { EventsService } from 'src/events/events.service';
 
 @Injectable()
 export class TicketsService {
@@ -115,7 +114,7 @@ export class TicketsService {
                 <b>Ticket link: </b><a href="${host.origin}/tickets/${ticket.id}">${host.origin}/tickets/${ticket.id}</a>
             </div>
             <div style="margin-bottom: 10px">
-                <b>Time: </b>${event.startTime}
+                <b>Time: </b>${formatDate(event.startTime)}
             </div>
             <div style="margin-bottom: 10px">
                 <b>Location: </b>${event.location}
@@ -143,7 +142,7 @@ export class TicketsService {
                 <b>Ticket link: </b><a href="${host.origin}/tickets/${ticket.id}">${host.origin}/tickets/${ticket.id}</a>
             </div>
             <div style="margin-bottom: 10px">
-                <b>Time: </b>${event.startTime}
+                <b>Time: </b>${formatDate(event.startTime)}
             </div>
             <div style="margin-bottom: 10px">
                 <b>Location: </b>${event.location}

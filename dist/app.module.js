@@ -28,20 +28,23 @@ exports.AppModule = AppModule = __decorate([
             events_module_1.EventsModule,
             auth_module_1.AuthModule,
             config_1.ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
-            typeorm_1.TypeOrmModule.forRoot({
-                type: 'mysql',
-                host: 'localhost',
-                username: 'backspac673d_root',
-                password: 'Bs4X6BQMBfFXnmRxHVfS',
-                database: 'backspac673d_ticket_management',
-                autoLoadEntities: true,
-                synchronize: true,
-                entities: [__dirname + '/../**/*.entity.js'],
-                extra: {
-                    "ssl": {
-                        "rejectUnauthorized": false
+            typeorm_1.TypeOrmModule.forRootAsync({
+                useFactory: (configService) => ({
+                    type: 'mysql',
+                    host: 'localhost',
+                    username: configService.get('DB_USERNAME'),
+                    password: configService.get('DB_LOGIN_PASSWORD'),
+                    database: configService.get('DB_NAME'),
+                    autoLoadEntities: true,
+                    synchronize: true,
+                    entities: [__dirname + '/../**/*.entity.js'],
+                    extra: {
+                        "ssl": {
+                            "rejectUnauthorized": false
+                        }
                     }
-                }
+                }),
+                inject: [config_1.ConfigService],
             }),
             passport_1.PassportModule.register({
                 session: true
