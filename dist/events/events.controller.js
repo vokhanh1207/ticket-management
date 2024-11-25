@@ -48,7 +48,7 @@ let EventsController = exports.EventsController = class EventsController {
     }
     async registerEvent(createTicketDto, req, res, headers) {
         createTicketDto.eventId = req.params?.eventId;
-        const ticket = await this.eventsService.regisiterEvent(createTicketDto, req.get('origin'));
+        const ticket = await this.eventsService.regisiterEvent(createTicketDto, req.get('host'));
         if (ticket) {
             return res.redirect('/tickets/' + ticket.id);
         }
@@ -80,8 +80,8 @@ let EventsController = exports.EventsController = class EventsController {
         return res.render('tickets', { tickets, user: req.user, eventId: req.params?.eventId });
     }
     async remindTickets(eventId, req) {
-        console.log('origin: ', req.get('origin'));
-        return await this.eventsService.sendRemindEmails(eventId, req.get('origin'));
+        console.log('origin: ', req.get('host'));
+        return await this.eventsService.sendRemindEmails(eventId, req.get('host'));
     }
 };
 __decorate([
