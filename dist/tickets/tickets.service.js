@@ -56,7 +56,7 @@ let TicketsService = exports.TicketsService = class TicketsService {
         dbTicket.qr = `${host.origin}/tickets/${event.id}/${ticket.id}.png`;
         await this.ticketsRepository.save(dbTicket);
         const mailOptions = this.getTicketMailOptions(dbTicket, event, host);
-        console.log(mailOptions.html);
+        this.mailService.sendMail(mailOptions);
         return ticket;
     }
     async sendRemindEmails(event, host) {
@@ -65,7 +65,7 @@ let TicketsService = exports.TicketsService = class TicketsService {
                 const removeDuplicates = [...new Map(tickets.map(item => [item['email'], item])).values()];
                 removeDuplicates.forEach(ticket => {
                     const mailOptions = this.getRemindMailOptions(ticket, event, host);
-                    console.log(mailOptions.html);
+                    this.mailService.sendMail(mailOptions);
                 });
             });
             return true;
