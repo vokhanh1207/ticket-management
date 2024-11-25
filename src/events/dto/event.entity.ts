@@ -12,7 +12,7 @@ export class Event {
     @Column({ nullable: true })
     createdBy: string;
 
-    @Column({ nullable: true })
+    @Column({ nullable: true, type: 'longtext' })
     description?: string;
 
     @Column({ nullable: true, type: 'datetime' })

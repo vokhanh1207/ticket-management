@@ -31,9 +31,9 @@ exports.AppModule = AppModule = __decorate([
             typeorm_1.TypeOrmModule.forRoot({
                 type: 'mysql',
                 host: 'localhost',
-                username: 'backspac673d_root',
-                password: 'Bs4X6BQMBfFXnmRxHVfS',
-                database: 'backspac673d_ticket_management',
+                username: 'khanhvo',
+                password: '123456',
+                database: 'ticket-management',
                 autoLoadEntities: true,
                 synchronize: true,
                 entities: [__dirname + '/../**/*.entity.js'],
