@@ -58,7 +58,7 @@ export class TicketsService {
 
         await this.ticketsRepository.save(dbTicket);
 
-        const mailOptions = this.getTicketMailOptions(dbTicket, event, host)
+        const mailOptions = this.getTicketMailOptions(dbTicket, event, host);
         this.mailService.sendMail(mailOptions);
         return ticket;
     }
@@ -68,7 +68,7 @@ export class TicketsService {
             this.getTicketsByEventId(event.id).then((tickets = []) => {
                 const removeDuplicates = [...new Map(tickets.map(item => [item['email'], item])).values()];
                 removeDuplicates.forEach(ticket => {
-                    const mailOptions = this.getRemindMailOptions(ticket, event, host)
+                    const mailOptions = this.getRemindMailOptions(ticket, event, host);
                     this.mailService.sendMail(mailOptions);
                 })
             });
