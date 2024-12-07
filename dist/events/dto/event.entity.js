@@ -45,6 +45,14 @@ __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Event.prototype, "status", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Event.prototype, "qr", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Event.prototype, "organizerId", void 0);
 exports.Event = Event = __decorate([
     (0, typeorm_1.Entity)()
 ], Event);

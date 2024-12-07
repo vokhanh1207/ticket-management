@@ -50,7 +50,7 @@ header {
 
 .status-CHECKED-IN {
     color: #fff!important;
-    background-color: RGBA(var(--bs-info-rgb),var(--bs-bg-opacity,1))!important;
+    background-color: RGBA(var(--bs-success-rgb),var(--bs-bg-opacity,1))!important;
 }
 
 .status-USED {
@@ -58,5 +58,5 @@ header {
 }
 
 .status-EXPIRED {
-    background-color: RGBA(var(--bs-success-rgb),var(--bs-bg-opacity,1))!important;
+    background-color: RGBA(var(--bs-info-rgb),var(--bs-bg-opacity,1))!important;
 }

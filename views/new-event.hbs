@@ -29,6 +29,16 @@
         <input type="text" placeholder="duration" id="duration" class="form-control" name="duration" required {{#if event}}
           value="{{event.duration}}" {{/if}} />
       </div>
+      {{#ifeq user.role 'ADMIN'}}
+      <div class="mb-3">
+        <label for="organizerId" class="form-label">Organizer</label>
+        <select name="organizerId" class="form-control">
+          {{#each ../organizers}}
+            <option value="{{id}}">{{name}}</option>
+          {{/each}}
+        </select>
+      </div>
+      {{/ifeq}}
       <div class="mb-3">
         <label for="description" class="form-label">Description</label>
 

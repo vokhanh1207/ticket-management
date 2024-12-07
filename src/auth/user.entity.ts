@@ -1,4 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { UserRole } from "./constants/user-role.constant";
 
 @Entity()
 export class User {
@@ -17,6 +18,9 @@ export class User {
     @Column({ nullable: true })
     lastName: string;
 
+    @Column() // ADMIN, ORGANIZER_ADMIN, SCANNER
+    role: UserRole;
+
     @Column({ nullable: true })
-    role: string;
+    organizerId: string;
 }

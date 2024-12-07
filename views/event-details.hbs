@@ -1,48 +1,63 @@
 <div class="container" style="color: black;">
   <div>
-    {{#if event}}
-    <div class="d-flex justify-content-between">
-      <h2 class="text-primary">
-        {{event.name}}
-      </h2>
-      {{#if user}}
-      <div class="">
-        <a href="/events/{{event.id}}/tickets" class="btn btn-primary btn-block mb-4">
-          <i class="fa fa-list-ol" aria-hidden="true"></i>
-        </a>
-        <a href="/events/{{event.id}}/edit" class="btn btn-primary btn-block mb-4">
-          <i class="fa fa-pencil" aria-hidden="true"></i>
-        </a>
+    <div class="row">
+      <div class="col-md-5">
+        <div class="text-center mb-5"><img src="{{event.qr}}" alt="QR code"></div>
       </div>
-      {{/if}}
-    </div>
+      <div class="col-md-7">
+        <div class="d-flex justify-content-between">
+          <h2 class="text-primary">
+            {{event.name}}
+          </h2>
+          {{#if manageable}}
+          <div class="d-flex  align-items-start gap-1">
+            <a href="/events/{{event.id}}/tickets" class="btn btn-primary btn-block mb-4">
+              <i class="fa fa-list-ol" aria-hidden="true"></i>
+            </a>
+            <a href="/events/{{event.id}}/edit" class="btn btn-primary btn-block mb-4">
+              <i class="fa fa-pencil" aria-hidden="true"></i>
+            </a>
+          </div>
+          {{/if}}
+        </div>
 
-    <div class="text-secondery mt-3">
-      <i class="fa fa-calendar-check-o text-primary" aria-hidden="true" style="width: 20px;"></i>
-      <span class="fw-lighter fst-italic">{{formatDate event.startTime 'HH:mm, MMM Do YYYY'}}</span>
-    </div>
-    <div class="mt-2">
-      <i class="fa fa-map-marker text-primary " aria-hidden="true" style="width: 20px;"></i>
-      <span class="fw-lighter fst-italic">{{event.location}}</span>
-    </div>
+        <div class="text-secondery mt-3">
+          <i class="fa fa-calendar-check-o text-primary" aria-hidden="true" style="width: 20px;"></i>
+          <span class="fw-lighter fst-italic">{{formatDate event.startTime 'HH:mm, MMM Do YYYY'}}</span>
+        </div>
+        <div class="mt-2">
+          <i class="fa fa-map-marker text-primary " aria-hidden="true" style="width: 20px;"></i>
+          <span class="fw-lighter fst-italic">{{event.location}}</span>
+        </div>
 
-    <div class="mt-5">
-      <p style="white-space: break-spaces;">{{event.description}}</p>
+        <div class="mt-5">
+          <p style="white-space: break-spaces;">{{event.description}}</p>
+        </div>
+
+        <div class="mt-5">
+          <div class="fs-2">Organizer</div>
+          <div class="fs-4 text-primary mt-3">{{organizer.name}}</div>
+          <p style="white-space: break-spaces;">{{organizer.description}}</p>
+        </div>
+        <form id="register-form" action="/events/{{event.id}}#register-form" method="post" class="mt-5 d-flex flex-column w-100">
+
+          <label for="exampleInputEmail1" class="form-label fs-2">Register this event</label>
+          <div class="mb-3">
+            <input type="email" placeholder="Email" id="email" class="form-control {{#if message}}is-invalid{{/if}}"
+              name="email" required />
+            <div id="validationServer05Feedback" class="invalid-feedback">
+              {{#if message}}{{message}}{{/if}}
+            </div>
+          </div>
+
+          <!-- Submit button -->
+          <button type="submit" class="btn btn-primary btn-block mb-4">Register</button>
+
+        </form>
+      </div>
     </div>
+    {{#if event}}
+
     {{/if}}
   </div>
-  <form action="/events/{{event.id}}" method="post" class="mt-5 d-flex flex-column w-100">
-
-    <label for="exampleInputEmail1" class="form-label fs-2">Register this event</label>
-    <div class="mb-3">
-      <input type="email" placeholder="Email" id="email" class="form-control {{#if message}}is-invalid{{/if}}" name="email" required />
-      <div id="validationServer05Feedback" class="invalid-feedback">
-        {{#if message}}{{message}}{{/if}}
-      </div>
-    </div>
-
-    <!-- Submit button -->
-    <button type="submit" class="btn btn-primary btn-block mb-4">Register</button>
-
-  </form>
 </div>

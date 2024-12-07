@@ -18,25 +18,33 @@ const events_service_1 = require("./events.service");
 const create_event_dto_1 = require("./dto/create-event.dto");
 const create_ticket_dto_1 = require("../tickets/dto/create-ticket.dto");
 const moment = require("moment");
+const organizers_service_1 = require("../organizers/organizers.service");
+const user_role_constant_1 = require("../auth/constants/user-role.constant");
 let EventsController = exports.EventsController = class EventsController {
-    constructor(eventsService) {
+    constructor(eventsService, organizersService) {
         this.eventsService = eventsService;
+        this.organizersService = organizersService;
     }
     async showEvents(res, req) {
         const events = await this.eventsService.getEvents();
         return res.render('events', { events, user: req.user });
     }
-    showNewEvents(res, req) {
+    async showNewEvents(res, req) {
         if (!req.user) {
             return res.redirect('.');
         }
-        return res.render('new-event', { user: req.user });
+        const organizers = await this.organizersService.getOrganizers();
+        console.log('organizers', organizers);
+        return res.render('new-event', { user: req.user, organizers: organizers });
     }
-    async createNewEvents(createEventDto, res, req) {
+    async createNewEvents(createEventDto, res, req, headers) {
         if (!req.user) {
             return res.redirect('.');
         }
-        const event = await this.eventsService.createEvent(createEventDto, req.user.username);
+        if (req.user.role !== user_role_constant_1.UserRole.Admin) {
+            createEventDto.organizerId = req.user.organizerId;
+        }
+        const event = await this.eventsService.createEvent(createEventDto, req.user.username, headers.origin);
         return res.redirect('/events/' + event.id);
     }
     async getEvent(res, req) {
@@ -44,7 +52,13 @@ let EventsController = exports.EventsController = class EventsController {
         if (!event) {
             return res.render('not-found', { event, user: req.user });
         }
-        return res.render('event-details', { event, user: req.user });
+        const organizer = await this.organizersService.getOrganizerId(event.organizerId);
+        let manageable = false;
+        const user = req.user;
+        if (user?.role === user_role_constant_1.UserRole.Admin || user?.organizerId === event.organizerId) {
+            manageable = true;
+        }
+        return res.render('event-details', { event, user: req.user, organizer, manageable });
     }
     async registerEvent(createTicketDto, req, res, headers) {
         createTicketDto.eventId = req.params?.eventId;
@@ -54,14 +68,22 @@ let EventsController = exports.EventsController = class EventsController {
         }
         else {
             const event = await this.eventsService.getEventById(req.params?.eventId);
-            return res.render('event-details', { event, user: req.user, message: 'The email provided has already been registered for this event.' });
+            return res.render('event-details', {
+                event,
+                user: req.user,
+                message: 'The email provided has already been registered for this event.'
+            });
         }
     }
     async showEditEvent(res, req) {
-        if (!req.user) {
+        const user = req.user;
+        if (!user) {
             return res.redirect('.');
         }
         const event = await this.eventsService.getEventById(req.params?.eventId);
+        if (user.organizerId !== event.organizerId) {
+            return res.redirect('.');
+        }
         return res.render('new-event', { event, user: req.user });
     }
     async editEvent(res, req, createEventDto) {
@@ -73,11 +95,16 @@ let EventsController = exports.EventsController = class EventsController {
         return res.redirect('/events/' + req.params?.eventId);
     }
     async getEventTickets(res, req) {
+        const user = req.user;
         if (!req.user) {
             return res.redirect('../' + req.params?.eventId);
         }
+        const event = await this.eventsService.getEventById(req.params?.eventId);
+        if (user.role !== user_role_constant_1.UserRole.Admin && user.organizerId !== event.organizerId) {
+            return res.redirect('.');
+        }
         const tickets = await this.eventsService.getTicketsByEventId(req.params?.eventId);
-        return res.render('tickets', { tickets, user: req.user, eventId: req.params?.eventId });
+        return res.render('tickets', { tickets: JSON.stringify(tickets), user: req.user, eventId: req.params?.eventId });
     }
     async remindTickets(eventId, req) {
         return await this.eventsService.sendRemindEmails(eventId, req.get('host'));
@@ -97,15 +124,16 @@ __decorate([
     __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], EventsController.prototype, "showNewEvents", null);
 __decorate([
     (0, common_1.Post)('new'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Res)()),
     __param(2, (0, common_1.Req)()),
+    __param(3, (0, common_1.Headers)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_event_dto_1.CreateEventDto, Object, Object]),
+    __metadata("design:paramtypes", [create_event_dto_1.CreateEventDto, Object, Object, Object]),
     __metadata("design:returntype", Promise)
 ], EventsController.prototype, "createNewEvents", null);
 __decorate([
@@ -160,6 +188,7 @@ __decorate([
 ], EventsController.prototype, "remindTickets", null);
 exports.EventsController = EventsController = __decorate([
     (0, common_1.Controller)('events'),
-    __metadata("design:paramtypes", [events_service_1.EventsService])
+    __metadata("design:paramtypes", [events_service_1.EventsService,
+        organizers_service_1.OrganizersService])
 ], EventsController);
 //# sourceMappingURL=events.controller.js.map

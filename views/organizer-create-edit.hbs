@@ -1,0 +1,37 @@
+<div class="container">
+  <div class="d-flex justify-content-between mb-3">
+    <h2>
+      {{#if organizer}}
+      Update organizer
+      {{else}}
+      New organizer
+      {{/if}} </h2>
+  </div>
+  <div class="">
+    <form action="/organizers/new" method="post">
+      <div class="mb-3">
+        <label for="name" class="form-label">Organizer</label>
+        <input type="text" placeholder="Name" id="organizer" class="form-control" name="name" required {{#if organizer}}
+          value="{{organizer.name}}" {{/if}} />
+      </div>
+      <div class="mb-3">
+        <label for="description" class="form-label">Description</label>
+
+        <textarea type="text" placeholder="description" id="description" class="form-control" required name="description" style="height: 250px">{{#if organizer}}{{organizer.description}}{{/if}}  
+        </textarea>
+      </div>
+
+
+      <!-- Submit button -->
+      <button type="submit" class="btn btn-primary">
+        {{#if organizer}}
+        Update organizer
+        {{else}}
+        Add organizer
+        {{/if}}
+      </button>
+
+    </form>
+
+  </div>
+</div>

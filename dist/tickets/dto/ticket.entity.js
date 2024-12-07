@@ -34,21 +34,21 @@ __decorate([
     __metadata("design:type", String)
 ], Ticket.prototype, "email", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", Date)
+    (0, typeorm_1.Column)({ nullable: true, type: 'timestamp' }),
+    __metadata("design:type", String)
 ], Ticket.prototype, "createdAt", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Ticket.prototype, "qr", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
+    (0, typeorm_1.Column)({ nullable: true, type: 'timestamp' }),
     __metadata("design:type", String)
 ], Ticket.prototype, "checkInTime", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
+    (0, typeorm_1.Column)({ nullable: true, type: 'timestamp' }),
     __metadata("design:type", String)
-], Ticket.prototype, "checkoutTime", void 0);
+], Ticket.prototype, "checkOutTime", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)

@@ -18,17 +18,17 @@ export class Ticket {
     @Column()
     email: string;
 
-    @Column({ nullable: true })
-    createdAt: Date;
+    @Column({ nullable: true, type: 'timestamp' })
+    createdAt: string;
 
     @Column({ nullable: true })
     qr?: string;
 
-    @Column({ nullable: true })
+    @Column({ nullable: true, type: 'timestamp' })
     checkInTime?: string;
 
-    @Column({ nullable: true })
-    checkoutTime?: string;
+    @Column({ nullable: true, type: 'timestamp' })
+    checkOutTime?: string;
 
     @Column({ nullable: true })
     status?: string;

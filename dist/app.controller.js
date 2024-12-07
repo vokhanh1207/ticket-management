@@ -18,10 +18,13 @@ const app_service_1 = require("./app.service");
 const auth_service_1 = require("./auth/auth.service");
 const auth_credentials_dto_1 = require("./auth/dto/auth-credentials.dto");
 const local_auth_guard_1 = require("./auth/local-auth.guard");
+const user_role_constant_1 = require("./auth/constants/user-role.constant");
+const organizers_service_1 = require("./organizers/organizers.service");
 let AppController = exports.AppController = class AppController {
-    constructor(appService, authService) {
+    constructor(appService, authService, organizerService) {
         this.appService = appService;
         this.authService = authService;
+        this.organizerService = organizerService;
     }
     getLandingPage(res, req) {
         return res.redirect('/events');
@@ -60,21 +63,26 @@ let AppController = exports.AppController = class AppController {
         if (!req.user) {
             return res.redirect('/events');
         }
-        return res.render('add-user', { user: req.user });
+        const organizers = await this.organizerService.getOrganizers();
+        return res.render('add-user', {
+            user: req.user,
+            roles: Object.values(user_role_constant_1.UserRole),
+            organizers
+        });
     }
     async addUser(res, req, userDto) {
-        if (!req.user) {
+        if (!req.user && req.user.role !== user_role_constant_1.UserRole.Admin) {
             return res.redirect('/events');
         }
         let message = '';
         try {
-            const user = await this.authService.signUp(userDto);
+            const user = await this.authService.signUp(userDto, req.user);
             message = 'User created successfully';
         }
         catch (error) {
             message = error.message;
         }
-        return res.render('add-user', { message });
+        return res.render('add-user', { user: req.user, message });
     }
 };
 __decorate([
@@ -142,6 +150,7 @@ __decorate([
 exports.AppController = AppController = __decorate([
     (0, common_1.Controller)(),
     __metadata("design:paramtypes", [app_service_1.AppService,
-        auth_service_1.AuthService])
+        auth_service_1.AuthService,
+        organizers_service_1.OrganizersService])
 ], AppController);
 //# sourceMappingURL=app.controller.js.map

@@ -4,9 +4,9 @@ export declare class Ticket {
     seat?: string;
     eventId: string;
     email: string;
-    createdAt: Date;
+    createdAt: string;
     qr?: string;
     checkInTime?: string;
-    checkoutTime?: string;
+    checkOutTime?: string;
     status?: string;
 }

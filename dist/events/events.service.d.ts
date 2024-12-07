@@ -13,7 +13,7 @@ export declare class EventsService {
     getEventById(id: string): Promise<Event>;
     getTicketsByEventId(eventId: string): Promise<Ticket[]>;
     getEvents(): Promise<Event[]>;
-    createEvent(createEventDto: CreateEventDto, username: string): Promise<Event>;
+    createEvent(createEventDto: CreateEventDto, username: string, origin: string): Promise<Event>;
     updateEvent(eventId: string, createEventDto: CreateEventDto): Promise<Event>;
     regisiterEvent(createTicketDto: CreateTicketDto, origin: string): Promise<Ticket>;
     sendRemindEmails(eventId: string, origin: string): Promise<boolean>;

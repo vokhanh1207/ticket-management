@@ -10,8 +10,38 @@
       <i class="fa fa-paper-plane-o" aria-hidden="true"></i>
     </button>
   </div>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="input-group flex-nowrap">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="addon-wrapping">@</span>
+        </div>
+        <input type="text" class="form-control" id="filter-input" placeholder="Filter by email" aria-label="Username"
+          aria-describedby="addon-wrapping">
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="d-flex justify-content-end gap-3">
+        <button type="button" class="btn position-relative">
+          Checked-in
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">
+            <span id="num-of-checked-in">21</span>
+          </span>
+        </button>
+        <button type="button" class="btn position-relative">
+          Checked-out
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+            <span id="num-of-checked-out">21</span>
+          </span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
   <div class="overflow-x-scroll">
-    <table class="table table-striped" style="min-width: 600px;">
+    <table class="table table-striped" id="tickets-table" style="min-width: 600px;">
       <thead>
         <tr>
           <th scope="col">#</th>
@@ -22,17 +52,6 @@
         </tr>
       </thead>
       <tbody>
-        {{#each tickets}}
-        <tr>
-          <th scope="row">
-            {{@index}}</th>
-          <td>{{this.email}}</td>
-          <td>{{formatDate this.createdAt 'HH:mm, MMM Do YYYY'}}</td>
-          <td><span class="status status-{{this.status}}">{{this.status}}</span></td>
-          <td><a href="/tickets/{{this.id}}">Details</a></td>
-        </tr>
-        {{/each}}
-
 
       </tbody>
     </table>
@@ -69,6 +88,46 @@
   </div>
 </div>
 <script>
+  const tickets = {{{ tickets }}}
+
+  function getTicketHtml(tickets = []) {
+    let html = '';
+    tickets.forEach((value, i) => {
+      html += `
+      <tr>
+        <th scope="row"> ${i + 1}</th>
+        <td>${value.email}</td>
+        <td>${ (value.createdAt ? new Date(value.createdAt).toLocaleDateString("en", "dd/M/yyyy") : value.createdAt) }</td>
+        <td><span class="status status-${value.status}">${value.status}</span></td>
+        <td><a href="/tickets/${value.id}">Details</a></td>
+      </tr>`
+    });
+
+    return html;
+  }
+
+  $('#tickets-table').find('tbody').html(getTicketHtml(tickets));
+
+  var debounce = null;
+  $("#filter-input").on("keyup", function (e) {
+    clearTimeout(debounce);
+    debounce = setTimeout(() => {
+      const input = $(this).val();
+      const filteredTickets = (tickets || []).filter(item => {
+        return (item.email || '').includes(input);
+      });
+      console.log(filteredTickets)
+
+      $('#tickets-table').find('tbody').html(getTicketHtml(filteredTickets));
+    }, 200);
+  });
+  $('#num-of-checked-in').text(countStatus('CHECKED-IN'));
+  $('#num-of-checked-out').text(countStatus('USED'));
+
+  function countStatus(status) {
+    return (tickets || []).filter(item => item.status == status).length;
+  }
+
   function handleOnClickSendEmails() {
     fetch(`${location.origin}/events/{{eventId}}/remind`)
       .then(res => {

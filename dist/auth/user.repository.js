@@ -14,22 +14,30 @@ const typeorm_1 = require("typeorm");
 const user_entity_1 = require("./user.entity");
 const common_1 = require("@nestjs/common");
 const bcrypt = require("bcrypt");
+const user_role_constant_1 = require("./constants/user-role.constant");
 let UserRepository = exports.UserRepository = class UserRepository extends typeorm_1.Repository {
     constructor(dataSource) {
         super(user_entity_1.User, dataSource.createEntityManager());
         this.dataSource = dataSource;
     }
-    async createUser(authCredentialDto) {
+    async createUser(authCredentialDto, currentUser) {
         const salt = await bcrypt.genSalt();
         const username = authCredentialDto.username;
         const firstName = authCredentialDto.firstName;
         const lastName = authCredentialDto.lastName;
+        const organizerId = authCredentialDto.organizerId;
+        const role = authCredentialDto.role;
+        if (!this.validateAssignedRole(role, currentUser)) {
+            throw new common_1.BadRequestException('Assigned role is invalid');
+        }
         const hashedPassword = await bcrypt.hash(authCredentialDto.password, salt);
         const user = this.create({
             username,
             password: hashedPassword,
             firstName,
-            lastName
+            lastName,
+            organizerId,
+            role
         });
         try {
             return await this.save(user);
@@ -45,6 +53,26 @@ let UserRepository = exports.UserRepository = class UserRepository extends typeo
     }
     async findUserById(id) {
         return await this.findOne({ where: { id } });
+    }
+    validateAssignedRole(assignedRole, currentUser) {
+        switch (assignedRole) {
+            case user_role_constant_1.UserRole.Admin:
+                if (currentUser.role !== user_role_constant_1.UserRole.Admin) {
+                    return false;
+                }
+                else {
+                    return true;
+                }
+            case user_role_constant_1.UserRole.OrganizerAdmin:
+                if (currentUser.role !== user_role_constant_1.UserRole.Admin && currentUser.role !== user_role_constant_1.UserRole.OrganizerAdmin) {
+                    return false;
+                }
+                else {
+                    return true;
+                }
+            default:
+                return true;
+        }
     }
 };
 exports.UserRepository = UserRepository = __decorate([

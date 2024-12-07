@@ -7,4 +7,6 @@ export declare class Event {
     duration?: number;
     location?: string;
     status?: string;
+    qr?: string;
+    organizerId?: string;
 }

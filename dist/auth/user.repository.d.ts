@@ -5,6 +5,7 @@ import { CreateUserDto } from "./dto/auth-credentials.dto";
 export declare class UserRepository extends Repository<User> {
     private dataSource;
     constructor(dataSource: DataSource);
-    createUser(authCredentialDto: CreateUserDto): Promise<User | HttpException>;
+    createUser(authCredentialDto: CreateUserDto, currentUser: User): Promise<User | HttpException>;
     findUserById(id: string): Promise<User>;
+    private validateAssignedRole;
 }

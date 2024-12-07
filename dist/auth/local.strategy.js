@@ -24,7 +24,6 @@ let LocalStrategy = exports.LocalStrategy = class LocalStrategy extends (0, pass
     }
     async validate(username, password) {
         const user = await this.authService.signIn({ username, password });
-        console.log('LocalStrategy ', user);
         if (!user) {
             throw new common_1.UnauthorizedException();
         }

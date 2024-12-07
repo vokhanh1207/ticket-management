@@ -4,6 +4,7 @@ exports.UserRole = void 0;
 var UserRole;
 (function (UserRole) {
     UserRole["Admin"] = "ADMIN";
-    UserRole["MasterAdmin"] = "MASTER_ADMIN";
+    UserRole["OrganizerAdmin"] = "ORGANIZER_ADMIN";
+    UserRole["Scanner"] = "SCANNER";
 })(UserRole || (exports.UserRole = UserRole = {}));
 //# sourceMappingURL=user-role.constant.js.map

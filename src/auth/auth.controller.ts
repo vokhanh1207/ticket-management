@@ -11,10 +11,10 @@ import { GetUser } from './get-user.decorator';
 export class AuthController {
     constructor(@Inject('AUTH_SERVICE') private authService: AuthService) { }
 
-    @Post('/signup')
-    async signUp(@Body() createUserDto: CreateUserDto): Promise<User | HttpException> {
-        return this.authService.signUp(createUserDto);
-    }
+    // @Post('/signup')
+    // async signUp(@Body() createUserDto: CreateUserDto): Promise<User | HttpException> {
+    //     return this.authService.signUp(createUserDto);
+    // }
 
     @Post('/login')
     @UseGuards(LocalAuthGuard)

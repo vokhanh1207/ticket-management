@@ -4,20 +4,22 @@ import { AppService } from './app.service';
 import { TicketsModule } from './tickets/tickets.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthService } from './auth/auth.service';
-import { AuthController } from './auth/auth.controller';
 import { AuthModule } from './auth/auth.module';
-import { EventsService } from './events/events.service';
 import { EventsModule } from './events/events.module';
 import { PassportModule } from '@nestjs/passport';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserRepository } from './auth/user.repository';
+import { OrganizersModule } from './organizers/organizers.module';
+import { OrganizersService } from './organizers/organizers.service';
+import { OrganizersRepository } from './organizers/organizers.repository';
 
 @Module({
   imports: [
     TicketsModule,
     EventsModule,
     AuthModule,
+    OrganizersModule,
     ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
     // TypeOrmModule.forRoot(
     //   {
@@ -95,6 +97,6 @@ import { UserRepository } from './auth/user.repository';
     }),
   ],
   controllers: [AppController],
-  providers: [AppService, AuthService, UserRepository]
+  providers: [AppService, AuthService, UserRepository, OrganizersService, OrganizersRepository]
 })
 export class AppModule { }

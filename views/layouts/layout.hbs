@@ -40,6 +40,12 @@
           </a>
           <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1" style="">
             <li><a class="dropdown-item" href="/my-profile">My profile</a></li>
+            {{#ifeq user.role 'ADMIN'}}
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li><a class="dropdown-item" href="/organizers">Organizers</a></li>
+            {{/ifeq}}
             <li>
               <hr class="dropdown-divider">
             </li>

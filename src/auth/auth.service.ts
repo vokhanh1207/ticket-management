@@ -16,8 +16,9 @@ export class AuthService {
         return this.userRepository.findUserById(id);
     }
 
-    async signUp(authCredentialDto: CreateUserDto): Promise<User | HttpException> {
-        return await this.userRepository.createUser(authCredentialDto);
+    async signUp(authCredentialDto: CreateUserDto, user: User): Promise<User | HttpException> {
+        console.log(authCredentialDto)
+        return await this.userRepository.createUser(authCredentialDto, user);
 
     }
 

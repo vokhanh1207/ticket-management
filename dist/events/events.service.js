@@ -16,6 +16,8 @@ const typeorm_1 = require("typeorm");
 const tickets_repository_1 = require("../tickets/tickets.repository");
 const tickets_service_1 = require("../tickets/tickets.service");
 const fs = require("fs");
+const QRCode = require("qrcode");
+const constants_1 = require("../utils.ts/constants");
 let EventsService = exports.EventsService = class EventsService {
     constructor(eventsRepository, ticketRepository, ticketsService) {
         this.eventsRepository = eventsRepository;
@@ -43,18 +45,28 @@ let EventsService = exports.EventsService = class EventsService {
         });
         return events;
     }
-    async createEvent(createEventDto, username) {
+    async createEvent(createEventDto, username, origin) {
+        if (!createEventDto.organizerId) {
+            throw new common_1.BadRequestException('Organizer is required.');
+        }
         const event = this.eventsRepository.create({
             name: createEventDto.name,
             description: createEventDto.description,
             startTime: createEventDto.startTime,
             location: createEventDto.location,
             duration: createEventDto.duration,
+            organizerId: createEventDto.organizerId,
             createdBy: username
         });
+        const dbEvent = await this.eventsRepository.save(event);
+        fs.mkdirSync(`${constants_1.TICKET_QR_DIR}/${event.id}`);
+        await QRCode.toFile(`${constants_1.EVENT_QR_DIR}/${event.id}.png`, `${origin}/events/${event.id}`, {
+            width: 260,
+            margin: 2
+        });
+        dbEvent.qr = `${origin}/qr/events/${event.id}.png`;
         await this.eventsRepository.save(event);
-        fs.mkdirSync(`${process.cwd()}/public/tickets/${event.id}`);
-        return event;
+        return dbEvent;
     }
     async updateEvent(eventId, createEventDto) {
         const dbEvent = await this.getEventById(eventId);

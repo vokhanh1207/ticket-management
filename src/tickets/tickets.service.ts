@@ -10,6 +10,7 @@ import { MailService } from 'src/mail/mail.service';
 import { ISendMailOptions } from '@nestjs-modules/mailer';
 import { Event } from 'src/events/dto/event.entity';
 import { formatDate } from 'src/utils.ts/format-date.util';
+import * as moment from 'moment'
 
 @Injectable()
 export class TicketsService {
@@ -29,10 +30,25 @@ export class TicketsService {
         return found;
     }
 
-    async updateTicket(ticket: Ticket): Promise<Ticket> {
-        await this.ticketsRepository.save(ticket);
-
-        return ticket;
+    async updateTicket(ticketId: string, updatedTicket: CreateTicketDto | Ticket): Promise<Ticket> {
+        const dbTicket = await this.ticketsRepository.findOne({
+            where: {
+                id: ticketId
+            }
+        });
+        if (updatedTicket.checkInTime) {
+            console.log('updatedTicket.checkInTime', updatedTicket.checkInTime);
+            dbTicket.checkInTime = moment(updatedTicket.checkInTime).toDate().toISOString();
+        }
+        if (updatedTicket.checkOutTime) {
+            console.log('dbTicket.checkOutTime', updatedTicket.checkOutTime);
+            dbTicket.checkOutTime = moment(updatedTicket.checkOutTime).toDate().toISOString();
+        }
+        if (updatedTicket.status) {
+            dbTicket.status = updatedTicket.status;
+        }
+        
+        return await this.ticketsRepository.save(dbTicket);
     }
 
     async createTicket(createTicketDto: CreateTicketDto, event: Event, origin: string): Promise<Ticket> {
@@ -42,24 +58,24 @@ export class TicketsService {
             seat: createTicketDto.seat,
             email: createTicketDto.email,
             status: TicketStatus.Active,
-            createdAt: new Date()
+            createdAt: moment(new Date).toDate().toISOString()
         });
         const dbTicket: Ticket = await this.ticketsRepository.save(ticket);
 
         await QRCode.toFile(
-            `${process.cwd()}/public/tickets/${event.id}/${ticket.id}.png`,
-            `${origin}/tickets/${dbTicket.id}/on-scan`,
+            `${process.cwd()}/public/qr/tickets/${event.id}/${ticket.id}.png`,
+            `${origin}/qr/tickets/${dbTicket.id}/on-scan`,
             {
                 width: 260,
-                margin: 0
+                margin: 2
             }
         );
-        dbTicket.qr = `${origin}/tickets/${event.id}/${ticket.id}.png`;
+        dbTicket.qr = `${origin}/qr/tickets/${event.id}/${ticket.id}.png`;
 
         await this.ticketsRepository.save(dbTicket);
 
         const mailOptions = this.getTicketMailOptions(dbTicket, event, origin);
-        this.mailService.sendMail(mailOptions);
+        // this.mailService.sendMail(mailOptions);
         return ticket;
     }
 
@@ -89,14 +105,14 @@ export class TicketsService {
         return ticket ? false : true;
     }
 
-    getNextAction(ticket: Ticket): TicketAction {
-        let action = TicketAction.CheckIn;
-        if (ticket.status === TicketStatus.CheckedIn) {
-            action = TicketAction.CheckOut
-        }
+    // getNextAction(ticket: Ticket): TicketAction {
+    //     let action = TicketAction.CheckIn;
+    //     if (ticket.status === TicketStatus.CheckedIn) {
+    //         action = TicketAction.CheckOut
+    //     }
 
-        return action;
-    }
+    //     return action;
+    // }
 
     private getTicketMailOptions(ticket: Ticket, event: Event, origin: string) {
         const options: ISendMailOptions = {};

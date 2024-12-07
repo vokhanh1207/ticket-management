@@ -6,7 +6,7 @@ export declare class AuthService {
     private userRepository;
     constructor(userRepository: UserRepository);
     findUserById(id: string): Promise<User>;
-    signUp(authCredentialDto: CreateUserDto): Promise<User | HttpException>;
+    signUp(authCredentialDto: CreateUserDto, user: User): Promise<User | HttpException>;
     signIn(authCredentialsDto: AuthCredentialsDto): Promise<Partial<User>>;
     updateUser(userDto: CreateUserDto): Promise<User>;
 }

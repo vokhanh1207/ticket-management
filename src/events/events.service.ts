@@ -1,4 +1,4 @@
-import { Injectable, Headers } from '@nestjs/common';
+import { Injectable, Headers, BadRequestException } from '@nestjs/common';
 import { CreateEventDto } from './dto/create-event.dto';
 import { Event } from './dto/event.entity';
 import { EventsRepository } from './events.repository';
@@ -8,6 +8,8 @@ import { Ticket } from 'src/tickets/dto/ticket.entity';
 import { CreateTicketDto } from 'src/tickets/dto/create-ticket.dto';
 import { TicketsService } from 'src/tickets/tickets.service';
 import * as fs from 'fs'
+import * as QRCode from 'qrcode';
+import { EVENT_QR_DIR, TICKET_QR_DIR } from 'src/utils.ts/constants';
 
 @Injectable()
 export class EventsService {
@@ -43,23 +45,36 @@ export class EventsService {
         return events;
     }
 
-    async createEvent(createEventDto: CreateEventDto, username: string): Promise<Event> {
-
+    async createEvent(createEventDto: CreateEventDto, username: string, origin: string): Promise<Event> {
+        if (!createEventDto.organizerId) {
+            throw new BadRequestException('Organizer is required.')
+        }
         const event: Event = this.eventsRepository.create({
             name: createEventDto.name,
             description: createEventDto.description,
             startTime: createEventDto.startTime,
             location: createEventDto.location,
             duration: createEventDto.duration,
+            organizerId: createEventDto.organizerId,
             createdBy: username
         });
 
+        const dbEvent = await this.eventsRepository.save(event);
+        // create folder for ticket QR codes
+        fs.mkdirSync(`${TICKET_QR_DIR}/${event.id}`);
+
+        await QRCode.toFile(
+            `${EVENT_QR_DIR}/${event.id}.png`,
+            `${origin}/events/${event.id}`,
+            {
+                width: 260,
+                margin: 2
+            }
+        );
+        dbEvent.qr = `${origin}/qr/events/${event.id}.png`;
         await this.eventsRepository.save(event);
 
-        // create folder for ticket QR codes
-        fs.mkdirSync(`${process.cwd()}/public/tickets/${event.id}`);
-
-        return event;
+        return dbEvent;
     }
 
     async updateEvent(eventId: string, createEventDto: CreateEventDto): Promise<Event> {

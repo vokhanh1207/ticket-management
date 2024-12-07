@@ -4,4 +4,5 @@ export class CreateEventDto {
     startTime?: string;
     location?: string;
     duration?: number;
+    organizerId?: string;
 }

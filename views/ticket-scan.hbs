@@ -1,0 +1,65 @@
+<div class="container" style="color: black;">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="text-center mb-5">
+        {{#if message}}
+        <div>
+          {{#ifeq message.code 'CHECKED-IN'}}
+            <i class="fa fa-check-circle-o" aria-hidden="true" style="font-size: 80px; color: rgb(69, 200, 85)"></i>
+          {{/ifeq}}
+          {{#ifeq message.code 'CHECKED-OUT'}}
+            <i class="fa fa-check-circle-o" aria-hidden="true" style="font-size: 80px; color: rgb(69, 200, 85)"></i>
+          {{/ifeq}}
+          {{#ifeq message.code 'USED'}}
+             <i class="fa fa-ban mb-3" aria-hidden="true" style="font-size: 80px; color: red"></i>
+          {{/ifeq}}
+          {{#ifeq message.code 'EXPIRED'}}
+             <i class="fa fa-ban mb-3" aria-hidden="true" style="font-size: 80px; color: red"></i>
+          {{/ifeq}}
+          {{#ifeq message.code 'NOT-VALID'}}
+             <i class="fa fa-exclamation mb-3" aria-hidden="true" style="font-size: 80px; color: red"></i>
+          {{/ifeq}}
+         
+        </div>
+        <h2>{{message.value}}</h2>
+        {{else}}
+        <div class="d-flex justify-content-center mb-3">
+          <div id="qrcode">
+            <img src="{{ticket.qr}}" alt="QR code">
+          </div>
+        </div>
+        {{/if}}
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="">
+        {{#if event}}
+        <a href="/events/{{event.id}}">
+          <h2>{{event.name}}</h2>
+        </a><br />
+
+        <div class="text-secondery">
+          <i class="fa fa-calendar-check-o text-primary" aria-hidden="true" style="width: 20px;"></i>
+          <span class="fw-lighter ">{{formatDate event.startTime 'HH:mm, MMM Do YYYY'}}</span>
+        </div>
+        <div class="mt-2">
+          <i class="fa fa-map-marker text-primary " aria-hidden="true" style="width: 20px;"></i>
+          <span class="fw-lighter">{{event.location}}</span>
+        </div>
+        {{/if}}
+      </div>
+      <div class="">
+        {{#if ticket}}
+        <div class="mt-2">
+          <i class="fa fa-envelope text-primary " aria-hidden="true" style="width: 20px;"></i>
+          <span class="fw-lighter">{{ticket.email}}</span>
+        </div>
+        <div class="mt-2">
+          <i class="fa fa-qrcode text-primary " aria-hidden="true" style="width: 20px;"></i>
+          <span class="fw-lighter">{{ticket.id}}</span>
+        </div>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+</div>

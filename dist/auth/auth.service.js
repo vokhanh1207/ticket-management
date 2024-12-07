@@ -20,8 +20,9 @@ let AuthService = exports.AuthService = class AuthService {
     async findUserById(id) {
         return this.userRepository.findUserById(id);
     }
-    async signUp(authCredentialDto) {
-        return await this.userRepository.createUser(authCredentialDto);
+    async signUp(authCredentialDto, user) {
+        console.log(authCredentialDto);
+        return await this.userRepository.createUser(authCredentialDto, user);
     }
     async signIn(authCredentialsDto) {
         const { username, password } = authCredentialsDto;

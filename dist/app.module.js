@@ -19,6 +19,9 @@ const passport_1 = require("@nestjs/passport");
 const mailer_1 = require("@nestjs-modules/mailer");
 const config_1 = require("@nestjs/config");
 const user_repository_1 = require("./auth/user.repository");
+const organizers_module_1 = require("./organizers/organizers.module");
+const organizers_service_1 = require("./organizers/organizers.service");
+const organizers_repository_1 = require("./organizers/organizers.repository");
 let AppModule = exports.AppModule = class AppModule {
 };
 exports.AppModule = AppModule = __decorate([
@@ -27,6 +30,7 @@ exports.AppModule = AppModule = __decorate([
             tickets_module_1.TicketsModule,
             events_module_1.EventsModule,
             auth_module_1.AuthModule,
+            organizers_module_1.OrganizersModule,
             config_1.ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
             typeorm_1.TypeOrmModule.forRootAsync({
                 useFactory: (configService) => ({
@@ -65,7 +69,7 @@ exports.AppModule = AppModule = __decorate([
             }),
         ],
         controllers: [app_controller_1.AppController],
-        providers: [app_service_1.AppService, auth_service_1.AuthService, user_repository_1.UserRepository]
+        providers: [app_service_1.AppService, auth_service_1.AuthService, user_repository_1.UserRepository, organizers_service_1.OrganizersService, organizers_repository_1.OrganizersRepository]
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

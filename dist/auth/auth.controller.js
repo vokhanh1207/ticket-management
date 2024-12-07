@@ -21,9 +21,6 @@ let AuthController = exports.AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
     }
-    async signUp(createUserDto) {
-        return this.authService.signUp(createUserDto);
-    }
     async login(body, res, req, session) {
         const user = await this.authService.signIn(body);
         if (user) {
@@ -39,13 +36,6 @@ let AuthController = exports.AuthController = class AuthController {
         return res.redirect('../events');
     }
 };
-__decorate([
-    (0, common_1.Post)('/signup'),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [auth_credentials_dto_1.CreateUserDto]),
-    __metadata("design:returntype", Promise)
-], AuthController.prototype, "signUp", null);
 __decorate([
     (0, common_1.Post)('/login'),
     (0, common_1.UseGuards)(local_auth_guard_1.LocalAuthGuard),

@@ -1,8 +1,9 @@
 import { DataSource, Repository } from "typeorm";
 import { User } from "./user.entity";
-import { ConflictException, HttpException, Injectable, InternalServerErrorException } from "@nestjs/common";
+import { BadRequestException, ConflictException, HttpException, Injectable, InternalServerErrorException } from "@nestjs/common";
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from "./dto/auth-credentials.dto";
+import { UserRole } from "./constants/user-role.constant";
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -10,11 +11,17 @@ export class UserRepository extends Repository<User> {
         super(User, dataSource.createEntityManager());
     }
 
-    async createUser(authCredentialDto: CreateUserDto): Promise<User | HttpException> {
+    async createUser(authCredentialDto: CreateUserDto, currentUser: User): Promise<User | HttpException> {
         const salt = await bcrypt.genSalt();
         const username = authCredentialDto.username;
         const firstName = authCredentialDto.firstName;
         const lastName = authCredentialDto.lastName;
+        const organizerId = authCredentialDto.organizerId;
+        const role = authCredentialDto.role;
+
+        if (!this.validateAssignedRole(role, currentUser)){
+            throw new BadRequestException('Assigned role is invalid');
+        }
         const hashedPassword = await bcrypt.hash(
             authCredentialDto.password, salt
         )
@@ -23,7 +30,9 @@ export class UserRepository extends Repository<User> {
             username,
             password: hashedPassword,
             firstName,
-            lastName
+            lastName,
+            organizerId,
+            role
         });
 
         try {
@@ -40,5 +49,26 @@ export class UserRepository extends Repository<User> {
 
     async findUserById(id: string): Promise<User> {
         return await this.findOne({ where: { id } });
+    }
+
+    private validateAssignedRole(assignedRole: string, currentUser: User): boolean {
+        switch (assignedRole) {
+            case UserRole.Admin:
+                if (currentUser.role !== UserRole.Admin) {
+                    return false;
+                } else {
+                    return true;
+                }
+
+            case UserRole.OrganizerAdmin:
+                if (currentUser.role !== UserRole.Admin && currentUser.role !== UserRole.OrganizerAdmin) {
+                    return false;
+                } else {
+                    return true;
+                }
+
+            default:
+                return true;
+        }
     }
 }

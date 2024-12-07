@@ -1,10 +1,11 @@
 <div class="container">
   <div class="d-flex justify-content-between mb-3">
     <h2>My profile</h2>
-
-    <a href="/add-user" type="button" class="btn btn-primary btn-block mb-4">
-      <i class="fa fa-plus" aria-hidden="true"></i>
-    </a>
+    {{#ifeq user.role 'ADMIN'}}
+      <a href="/add-user" type="button" class="btn btn-primary btn-block mb-4">
+        <i class="fa fa-plus" aria-hidden="true"></i>
+      </a>
+    {{/ifeq}}
   </div>
   <div class="">
     <form method="post" action="my-profile">

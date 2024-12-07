@@ -26,4 +26,10 @@ export class Event {
 
     @Column({ nullable: true })
     status?: string;
+
+    @Column({nullable: true})
+    qr?: string;
+
+    @Column({nullable: true})
+    organizerId?: string;
 }

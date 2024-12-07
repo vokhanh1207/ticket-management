@@ -22,6 +22,7 @@ const tickets_repository_1 = require("./tickets.repository");
 const constants_1 = require("./constants");
 const mail_service_1 = require("../mail/mail.service");
 const format_date_util_1 = require("../utils.ts/format-date.util");
+const moment = require("moment");
 let TicketsService = exports.TicketsService = class TicketsService {
     constructor(ticketsRepository, mailService, configService) {
         this.ticketsRepository = ticketsRepository;
@@ -35,9 +36,24 @@ let TicketsService = exports.TicketsService = class TicketsService {
         }
         return found;
     }
-    async updateTicket(ticket) {
-        await this.ticketsRepository.save(ticket);
-        return ticket;
+    async updateTicket(ticketId, updatedTicket) {
+        const dbTicket = await this.ticketsRepository.findOne({
+            where: {
+                id: ticketId
+            }
+        });
+        if (updatedTicket.checkInTime) {
+            console.log('updatedTicket.checkInTime', updatedTicket.checkInTime);
+            dbTicket.checkInTime = moment(updatedTicket.checkInTime).toDate().toISOString();
+        }
+        if (updatedTicket.checkOutTime) {
+            console.log('dbTicket.checkOutTime', updatedTicket.checkOutTime);
+            dbTicket.checkOutTime = moment(updatedTicket.checkOutTime).toDate().toISOString();
+        }
+        if (updatedTicket.status) {
+            dbTicket.status = updatedTicket.status;
+        }
+        return await this.ticketsRepository.save(dbTicket);
     }
     async createTicket(createTicketDto, event, origin) {
         const ticket = this.ticketsRepository.create({
@@ -46,17 +62,16 @@ let TicketsService = exports.TicketsService = class TicketsService {
             seat: createTicketDto.seat,
             email: createTicketDto.email,
             status: constants_1.TicketStatus.Active,
-            createdAt: new Date()
+            createdAt: moment(new Date).toDate().toISOString()
         });
         const dbTicket = await this.ticketsRepository.save(ticket);
-        await QRCode.toFile(`${process.cwd()}/public/tickets/${event.id}/${ticket.id}.png`, `${origin}/tickets/${dbTicket.id}/on-scan`, {
+        await QRCode.toFile(`${process.cwd()}/public/qr/tickets/${event.id}/${ticket.id}.png`, `${origin}/qr/tickets/${dbTicket.id}/on-scan`, {
             width: 260,
-            margin: 0
+            margin: 2
         });
-        dbTicket.qr = `${origin}/tickets/${event.id}/${ticket.id}.png`;
+        dbTicket.qr = `${origin}/qr/tickets/${event.id}/${ticket.id}.png`;
         await this.ticketsRepository.save(dbTicket);
         const mailOptions = this.getTicketMailOptions(dbTicket, event, origin);
-        this.mailService.sendMail(mailOptions);
         return ticket;
     }
     async sendRemindEmails(event, origin) {
@@ -81,13 +96,6 @@ let TicketsService = exports.TicketsService = class TicketsService {
     async validateRegisterEmail(eventId, email) {
         const ticket = await this.ticketsRepository.findOne({ where: { eventId, email } });
         return ticket ? false : true;
-    }
-    getNextAction(ticket) {
-        let action = constants_1.TicketAction.CheckIn;
-        if (ticket.status === constants_1.TicketStatus.CheckedIn) {
-            action = constants_1.TicketAction.CheckOut;
-        }
-        return action;
     }
     getTicketMailOptions(ticket, event, origin) {
         const options = {};
