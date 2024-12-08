@@ -50,14 +50,16 @@ let AppController = exports.AppController = class AppController {
             return res.redirect('/events');
         }
         const user = await this.authService.findUserById(req.user.id);
-        return res.render('my-profile', { user });
+        const organizer = await this.organizerService.getOrganizerId(user.organizerId);
+        return res.render('my-profile', { user, organizer });
     }
     async updateMyProfile(res, req, userDto) {
-        if (!req.user) {
+        const user = req.user;
+        if (!user) {
             return res.redirect('/events');
         }
-        const user = await this.authService.updateUser(userDto);
-        return res.render('my-profile', { user });
+        const updatedUser = await this.authService.updateUser(userDto);
+        return res.render('my-profile', { updatedUser });
     }
     async showAddUser(res, req, userDto) {
         if (!req.user) {

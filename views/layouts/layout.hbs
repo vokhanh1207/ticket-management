@@ -46,6 +46,12 @@
               </li>
               <li><a class="dropdown-item" href="/organizers">Organizers</a></li>
             {{/ifeq}}
+            {{#ifeq user.role 'ORGANIZER_ADMIN'}}
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li><a class="dropdown-item" href="/organizers/{{../user.organizerId}}/edit">My organization</a></li>
+            {{/ifeq}}
             <li>
               <hr class="dropdown-divider">
             </li>

@@ -18,7 +18,7 @@ export class OrganizersController {
     async showOrganizers(
         @Res() res: Response,
         @Req() req: Request) {
-        if (!req.user || (req.user as User)?.role !== UserRole.Admin) {
+        if (!req.user && (req.user as User)?.role !== UserRole.Admin && (req.user as User)?.role !== UserRole.Admin) {
             return res.render('forbidden');
         }
         try {
@@ -55,13 +55,50 @@ export class OrganizersController {
         }
     }
 
+
     @Get(':organizerId')
-    async getEvent(@Res() res: Response, @Req() req: Request) {
+    async getOrganizer(@Res() res: Response, @Req() req: Request) {
+        const organizerId = req.params?.organizerId;
         const organizer = await this.organizersService.getOrganizerId(req.params?.organizerId);
         if (!organizer) {
-            return res.render('not-found', { event, user: req.user });
+            return res.render('not-found', { user: req.user });
         }
         
-        return res.render('organizer-create-edit', { organizer, user: req.user });
+        return res.render('organizer', { organizer, user: req.user });
+    }
+
+    @Post(':organizerId')
+    async updateMyOrganization(@Res() res: Response, @Req() req: Request, @Body() createOrganizerDto: CreateOrganizerDto) {
+        const organizerId = req.params?.organizerId;
+        if (!req.user) {
+            return res.redirect(`/organizers/${organizerId}`);
+        }
+        const user = req.user as User;
+        if (user && 
+            user?.role === UserRole.Admin ||
+            (user?.role === UserRole.OrganizerAdmin && user.organizerId === organizerId)
+        ) {
+            await this.organizersService.updateOrganizers((req.user as User).organizerId, createOrganizerDto);
+        }
+        return res.redirect(`/organizers/${organizerId}`);
+    }
+
+    @Get(':organizerId/edit')
+    async getEvent(@Res() res: Response, @Req() req: Request) {
+        const organizerId = req.params?.organizerId;
+        const organizer = await this.organizersService.getOrganizerId(req.params?.organizerId);
+        let manageable = false;
+        if (!organizer) {
+            return res.render('not-found', { user: req.user });
+        }
+        const user = req.user as User;
+        if (user && 
+            user?.role === UserRole.Admin ||
+            (user?.role === UserRole.OrganizerAdmin && user.organizerId === organizerId)
+        ) {
+            return res.render('organizer-create-edit', { organizer, user: req.user, manageable });
+        }
+
+        return res.redirect(`/organizers/${organizerId}`); 
     }
 }

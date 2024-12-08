@@ -10,7 +10,7 @@ export class OrganizersService {
 
     async createOrganizer(createOrganizerDto: CreateOrganizerDto): Promise<Organizer | HttpException> {
         console.log('createOrganizerDto ', createOrganizerDto)
-        if(!createOrganizerDto.name) {
+        if (!createOrganizerDto.name) {
             return new BadRequestException()
         } else {
             return await this.organizersRepository.save(createOrganizerDto);
@@ -20,7 +20,15 @@ export class OrganizersService {
     async getOrganizers(): Promise<Organizer[] | HttpException> {
         return await this.organizersRepository.find();
     }
-    
+
+    async updateOrganizers(id: string, organizer: CreateOrganizerDto): Promise<Organizer> {
+        const dbOrg = await this.organizersRepository.findOneBy({ id });
+        return await this.organizersRepository.save({
+            ...dbOrg,
+            ...organizer
+        });
+    }
+
     async getOrganizerId(id: string): Promise<Organizer | HttpException> {
         return await this.organizersRepository.findOne({
             where: { id }

@@ -1,61 +1,132 @@
 <div class="container">
-  <div class="d-flex justify-content-between mb-3">
-    <h2>Tickets</h2>
-    {{!-- <button class="btn btn-primary btn-block">
-      <i class="fa fa-paper-plane-o" aria-hidden="true"></i>
-    </button> --}}
+  <section>
+    <div class="d-flex justify-content-between mb-3">
+      <h2>Tickets</h2>
+      {{!-- <button class="btn btn-primary btn-block">
+        <i class="fa fa-paper-plane-o" aria-hidden="true"></i>
+      </button> --}}
 
-    <button type="button" class="btn btn-primary btn-block" data-bs-toggle="modal"
-      data-bs-target="#send-mails-confirmation">
-      <i class="fa fa-paper-plane-o" aria-hidden="true"></i>
-    </button>
-  </div>
-  <div class="row">
-    <div class="col-md-6">
-      <div class="input-group flex-nowrap">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="addon-wrapping">@</span>
+      <button type="button" class="btn btn-primary btn-block" data-bs-toggle="modal"
+        data-bs-target="#send-mails-confirmation">
+        <i class="fa fa-paper-plane-o" aria-hidden="true"></i>
+      </button>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="input-group flex-nowrap">
+          <div class="input-group-prepend">
+            <span class="input-group-text" id="addon-wrapping">@</span>
+          </div>
+          <input type="text" class="form-control" id="filter-input" placeholder="Filter by email" aria-label="Username"
+            aria-describedby="addon-wrapping">
         </div>
-        <input type="text" class="form-control" id="filter-input" placeholder="Filter by email" aria-label="Username"
-          aria-describedby="addon-wrapping">
+      </div>
+      <div class="col-md-6">
+        <div class="d-flex justify-content-end gap-3">
+          <button type="button" class="btn position-relative">
+            Checked-in
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">
+              <span id="num-of-checked-in">21</span>
+            </span>
+          </button>
+          <button type="button" class="btn position-relative">
+            Checked-out
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+              <span id="num-of-checked-out">21</span>
+            </span>
+          </button>
+        </div>
+
       </div>
     </div>
-    <div class="col-md-6">
-      <div class="d-flex justify-content-end gap-3">
-        <button type="button" class="btn position-relative">
-          Checked-in
-          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">
-            <span id="num-of-checked-in">21</span>
-          </span>
-        </button>
-        <button type="button" class="btn position-relative">
-          Checked-out
-          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-            <span id="num-of-checked-out">21</span>
-          </span>
-        </button>
-      </div>
 
+
+    <div class="overflow-x-scroll">
+      <table class="table table-striped" id="tickets-table" style="min-width: 600px;">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Email</th>
+            <th scope="col">Created At</th>
+            <th scope="col">Status</th>
+            <th scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+      </table>
     </div>
-  </div>
+  </section>
+  <section>
+    <div class="d-flex justify-content-between mb-3 mt-3">
+      <h2>Reminder email schedules</h2>
+    </div>
 
-
-  <div class="overflow-x-scroll">
-    <table class="table table-striped" id="tickets-table" style="min-width: 600px;">
-      <thead>
-        <tr>
-          <th scope="col">#</th>
-          <th scope="col">Email</th>
-          <th scope="col">Created At</th>
-          <th scope="col">Status</th>
-          <th scope="col"></th>
-        </tr>
-      </thead>
-      <tbody>
-
-      </tbody>
-    </table>
-  </div>
+    <form>
+      <div class="d-flex justify-content-between gap-3">
+        <input type="date" class="form-control" placeholder="Date">
+        <select type="text" class="form-control" placeholder="Time">
+          <option value="0">12:00 am</option>
+          <option value="1">1:00 am</option>
+          <option value="2">2:00 am</option>
+          <option value="3">3:00 am</option>
+          <option value="4">4:00 am</option>
+          <option value="5">5:00 am</option>
+          <option value="6">6:00 am</option>
+          <option value="7">7:00 am</option>
+          <option value="8">8:00 am</option>
+          <option value="9">9:00 am</option>
+          <option value="10">10:00 am</option>
+          <option value="11">11:00 am</option>
+          <option value="12">12:00 pm</option>
+          <option value="13">1:00 pm</option>
+          <option value="14">2:00 pm</option>
+          <option value="15">3:00 pm</option>
+          <option value="16">4:00 pm</option>
+          <option value="17">5:00 pm</option>
+          <option value="18">6:00 pm</option>
+          <option value="19">7:00 pm</option>
+          <option value="20">8:00 pm</option>
+          <option value="21">9:00 pm</option>
+          <option value="22">10:00 pm</option>
+          <option value="23">11:00 pm</option>
+        </select>
+      </div>
+      <div class="d-flex justify-content-between gap-3 mt-3">
+        <input type="date" class="form-control" placeholder="Date">
+        <select type="text" class="form-control" placeholder="Time">
+          <option value="0">12:00 am</option>
+          <option value="1">1:00 am</option>
+          <option value="2">2:00 am</option>
+          <option value="3">3:00 am</option>
+          <option value="4">4:00 am</option>
+          <option value="5">5:00 am</option>
+          <option value="6">6:00 am</option>
+          <option value="7">7:00 am</option>
+          <option value="8">8:00 am</option>
+          <option value="9">9:00 am</option>
+          <option value="10">10:00 am</option>
+          <option value="11">11:00 am</option>
+          <option value="12">12:00 pm</option>
+          <option value="13">1:00 pm</option>
+          <option value="14">2:00 pm</option>
+          <option value="15">3:00 pm</option>
+          <option value="16">4:00 pm</option>
+          <option value="17">5:00 pm</option>
+          <option value="18">6:00 pm</option>
+          <option value="19">7:00 pm</option>
+          <option value="20">8:00 pm</option>
+          <option value="21">9:00 pm</option>
+          <option value="22">10:00 pm</option>
+          <option value="23">11:00 pm</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary mt-3">
+        Save
+      </button>
+    </form>
+  </section>
 </div>
 
 <!-- Modal -->
@@ -97,7 +168,7 @@
       <tr>
         <th scope="row"> ${i + 1}</th>
         <td>${value.email}</td>
-        <td>${ (value.createdAt ? new Date(value.createdAt).toLocaleDateString("en", "dd/M/yyyy") : value.createdAt) }</td>
+        <td>${(value.createdAt ? new Date(value.createdAt).toLocaleDateString("en", "dd/M/yyyy") : value.createdAt)}</td>
         <td><span class="status status-${value.status}">${value.status}</span></td>
         <td><a href="/tickets/${value.id}">Details</a></td>
       </tr>`

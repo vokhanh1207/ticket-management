@@ -28,6 +28,13 @@ let OrganizersService = exports.OrganizersService = class OrganizersService {
     async getOrganizers() {
         return await this.organizersRepository.find();
     }
+    async updateOrganizers(id, organizer) {
+        const dbOrg = await this.organizersRepository.findOneBy({ id });
+        return await this.organizersRepository.save({
+            ...dbOrg,
+            ...organizer
+        });
+    }
     async getOrganizerId(id) {
         return await this.organizersRepository.findOne({
             where: { id }

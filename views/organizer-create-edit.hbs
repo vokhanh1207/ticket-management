@@ -8,7 +8,7 @@
       {{/if}} </h2>
   </div>
   <div class="">
-    <form action="/organizers/new" method="post">
+    <form action="/organizers/{{#if organizer}}{{organizer.id}}{{else}}new{{/if}}" method="post">
       <div class="mb-3">
         <label for="name" class="form-label">Organizer</label>
         <input type="text" placeholder="Name" id="organizer" class="form-control" name="name" required {{#if organizer}}
@@ -17,8 +17,7 @@
       <div class="mb-3">
         <label for="description" class="form-label">Description</label>
 
-        <textarea type="text" placeholder="description" id="description" class="form-control" required name="description" style="height: 250px">{{#if organizer}}{{organizer.description}}{{/if}}  
-        </textarea>
+        <textarea type="text" placeholder="description" id="description" class="form-control" required name="description" style="height: 250px">{{#if organizer}}{{organizer.description}}{{/if}}</textarea>
       </div>
 
 

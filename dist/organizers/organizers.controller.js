@@ -22,7 +22,7 @@ let OrganizersController = exports.OrganizersController = class OrganizersContro
         this.organizersService = organizersService;
     }
     async showOrganizers(res, req) {
-        if (!req.user || req.user?.role !== user_role_constant_1.UserRole.Admin) {
+        if (!req.user && req.user?.role !== user_role_constant_1.UserRole.Admin && req.user?.role !== user_role_constant_1.UserRole.Admin) {
             return res.render('forbidden');
         }
         try {
@@ -51,12 +51,41 @@ let OrganizersController = exports.OrganizersController = class OrganizersContro
             console.log(error);
         }
     }
-    async getEvent(res, req) {
+    async getOrganizer(res, req) {
+        const organizerId = req.params?.organizerId;
         const organizer = await this.organizersService.getOrganizerId(req.params?.organizerId);
         if (!organizer) {
-            return res.render('not-found', { event, user: req.user });
+            return res.render('not-found', { user: req.user });
         }
-        return res.render('organizer-create-edit', { organizer, user: req.user });
+        return res.render('organizer', { organizer, user: req.user });
+    }
+    async updateMyOrganization(res, req, createOrganizerDto) {
+        const organizerId = req.params?.organizerId;
+        if (!req.user) {
+            return res.redirect(`/organizers/${organizerId}`);
+        }
+        const user = req.user;
+        if (user &&
+            user?.role === user_role_constant_1.UserRole.Admin ||
+            (user?.role === user_role_constant_1.UserRole.OrganizerAdmin && user.organizerId === organizerId)) {
+            await this.organizersService.updateOrganizers(req.user.organizerId, createOrganizerDto);
+        }
+        return res.redirect(`/organizers/${organizerId}`);
+    }
+    async getEvent(res, req) {
+        const organizerId = req.params?.organizerId;
+        const organizer = await this.organizersService.getOrganizerId(req.params?.organizerId);
+        let manageable = false;
+        if (!organizer) {
+            return res.render('not-found', { user: req.user });
+        }
+        const user = req.user;
+        if (user &&
+            user?.role === user_role_constant_1.UserRole.Admin ||
+            (user?.role === user_role_constant_1.UserRole.OrganizerAdmin && user.organizerId === organizerId)) {
+            return res.render('organizer-create-edit', { organizer, user: req.user, manageable });
+        }
+        return res.redirect(`/organizers/${organizerId}`);
     }
 };
 __decorate([
@@ -86,6 +115,23 @@ __decorate([
 ], OrganizersController.prototype, "newOrganizer", null);
 __decorate([
     (0, common_1.Get)(':organizerId'),
+    __param(0, (0, common_1.Res)()),
+    __param(1, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], OrganizersController.prototype, "getOrganizer", null);
+__decorate([
+    (0, common_1.Post)(':organizerId'),
+    __param(0, (0, common_1.Res)()),
+    __param(1, (0, common_1.Req)()),
+    __param(2, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object, create_organizer_dto_1.CreateOrganizerDto]),
+    __metadata("design:returntype", Promise)
+], OrganizersController.prototype, "updateMyOrganization", null);
+__decorate([
+    (0, common_1.Get)(':organizerId/edit'),
     __param(0, (0, common_1.Res)()),
     __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),

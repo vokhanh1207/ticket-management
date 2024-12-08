@@ -72,6 +72,7 @@ let TicketsService = exports.TicketsService = class TicketsService {
         dbTicket.qr = `${origin}/qr/tickets/${event.id}/${ticket.id}.png`;
         await this.ticketsRepository.save(dbTicket);
         const mailOptions = this.getTicketMailOptions(dbTicket, event, origin);
+        this.mailService.sendMail(mailOptions);
         return ticket;
     }
     async sendRemindEmails(event, origin) {

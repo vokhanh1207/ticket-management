@@ -75,7 +75,7 @@ export class TicketsService {
         await this.ticketsRepository.save(dbTicket);
 
         const mailOptions = this.getTicketMailOptions(dbTicket, event, origin);
-        // this.mailService.sendMail(mailOptions);
+        this.mailService.sendMail(mailOptions);
         return ticket;
     }
 

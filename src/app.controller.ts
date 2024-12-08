@@ -7,6 +7,7 @@ import { AuthCredentialsDto, CreateUserDto } from './auth/dto/auth-credentials.d
 import { LocalAuthGuard } from './auth/local-auth.guard';
 import { UserRole } from './auth/constants/user-role.constant';
 import { OrganizersService } from './organizers/organizers.service';
+import { CreateOrganizerDto } from './organizers/dto/create-organizer.dto';
 
 @Controller()
 export class AppController {
@@ -52,17 +53,20 @@ export class AppController {
     if (!req.user) {
       return res.redirect('/events');
     }
-    const user = await this.authService.findUserById((req.user as User).id)
-    return res.render('my-profile', { user });
+    const user = await this.authService.findUserById((req.user as User).id);
+    const organizer = await this.organizerService.getOrganizerId(user.organizerId);
+    return res.render('my-profile', { user, organizer });
   }
 
   @Post('my-profile')
   async updateMyProfile(@Res() res: Response, @Req() req: Request, @Body() userDto: CreateUserDto) {
-    if (!req.user) {
+    const user = req.user as User;
+    if (!user) {
       return res.redirect('/events');
     }
-    const user = await this.authService.updateUser(userDto)
-    return res.render('my-profile', { user });
+
+    const updatedUser = await this.authService.updateUser(userDto);
+    return res.render('my-profile', { updatedUser });
   }
 
   @Get('add-user')
