@@ -24,12 +24,16 @@ let MailSchedulesService = exports.MailSchedulesService = class MailSchedulesSer
         this.configService = configService;
     }
     handleCron() {
-        console.log('asdfasdfasdf sdfsadfasd send mail');
         this.sendMailSchudles();
     }
     async getEventMailSchedules(eventId) {
         try {
-            const found = await this.mailSchedulesRepository.findBy({ eventId });
+            const found = await this.mailSchedulesRepository.find({
+                where: { eventId },
+                order: {
+                    date: "ASC"
+                }
+            });
             return found;
         }
         catch (error) {

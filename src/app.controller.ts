@@ -66,7 +66,7 @@ export class AppController {
     }
 
     const updatedUser = await this.authService.updateUser(userDto);
-    return res.render('my-profile', { updatedUser });
+    return res.render('my-profile', { user: updatedUser });
   }
 
   @Get('add-user')

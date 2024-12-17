@@ -168,10 +168,10 @@
     </div>
   </div>
 </div>
-<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999">
-  <div id="liveToast" class="toast align-items-center" role="alert" aria-live="assertive" aria-atomic="true">
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 9999">
+  <div id="liveToast" class="toast align-items-center bg-primary" role="alert" aria-live="assertive" aria-atomic="true">
     <div class="d-flex">
-      <div class="toast-body" id="bulk-emails-message">
+      <div class="toast-body" id="toast-message">
       </div>
       <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
     </div>
@@ -238,8 +238,16 @@
       },
       body: JSON.stringify(dto)
     })
-      .then(res => res.json())
-      .then(res => {rednerSchedules(res || [])
+      .then(res => {
+        if (res.status == 200) {
+          showToastMessage('Reminder email schedules updated!');
+          return res.json();
+        } else {
+          showToastMessage('Something went wrong. Try again later.');
+          return [];
+        }
+      })
+      .then(res => {rednerSchedules(res)
       });
   });
 
@@ -252,8 +260,16 @@
         'Content-Type': 'application/json'
       }
     })
-      .then(res => res.json())
-      .then(res => rednerSchedules(res || []))
+      .then(res => {
+        if (res.status == 200) {
+          showToastMessage('Reminder email schedules updated!');
+          return res.json();
+        } else {
+          showToastMessage('Something went wrong. Try again later.');
+          return [];
+        }
+      })
+      .then(res => rednerSchedules(res))
   })
 
   function rednerSchedules(items) {
@@ -275,19 +291,20 @@
 
   function handleOnClickSendEmails() {
     fetch(`${location.origin}/events/{{eventId}}/remind`).then(res => {
-      const messageEl = document.getElementById('bulk-emails-message');
-      let message = '';
       if (res.status == 200) {
-        message = 'The emails are being sent in the background process.'
+        showToastMessage('The emails are being sent in the background process.');
       } else {
-        message = 'Something went wrong. Try again later.'
+        showToastMessage('Something went wrong. Try again later.');
       }
-
-      messageEl.innerHTML = message;
-      var toastEl = document.getElementById('liveToast');
-      var toast = new bootstrap.Toast(toastEl)
-      toast.show()
     });
+  }
 
+  function showToastMessage(message) {
+    const messageEl = document.getElementById('toast-message');
+
+    messageEl.innerHTML = message;
+    var toastEl = document.getElementById('liveToast');
+    var toast = new bootstrap.Toast(toastEl)
+    toast.show();
   }
 </script>

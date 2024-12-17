@@ -59,7 +59,7 @@ let AppController = exports.AppController = class AppController {
             return res.redirect('/events');
         }
         const updatedUser = await this.authService.updateUser(userDto);
-        return res.render('my-profile', { updatedUser });
+        return res.render('my-profile', { user: updatedUser });
     }
     async showAddUser(res, req, userDto) {
         if (!req.user) {

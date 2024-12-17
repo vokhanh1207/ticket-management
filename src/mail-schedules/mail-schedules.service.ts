@@ -18,13 +18,17 @@ export class MailSchedulesService {
 
     @Cron(CronExpression.EVERY_10_SECONDS, { name: 'remindEmails'})
     handleCron() {
-        console.log('asdfasdfasdf sdfsadfasd send mail')
         this.sendMailSchudles();
     }
 
     async getEventMailSchedules(eventId: string): Promise<MailSchedule[]> {
         try {
-            const found = await this.mailSchedulesRepository.findBy({ eventId })
+            const found = await this.mailSchedulesRepository.find({
+                where: { eventId },
+                order: {
+                    date: "ASC"
+                }
+            });
             return found;
         } catch (error) {
             return null;
