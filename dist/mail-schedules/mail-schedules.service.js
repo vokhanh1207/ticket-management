@@ -29,7 +29,7 @@ let MailSchedulesService = exports.MailSchedulesService = class MailSchedulesSer
     }
     async getEventMailSchedules(eventId) {
         try {
-            const found = await this.mailSchedulesRepository.findBy({ eventId, status: constants_1.MailScheduleStatus.Queuing });
+            const found = await this.mailSchedulesRepository.findBy({ eventId });
             return found;
         }
         catch (error) {

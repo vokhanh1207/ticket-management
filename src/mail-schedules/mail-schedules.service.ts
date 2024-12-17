@@ -24,7 +24,7 @@ export class MailSchedulesService {
 
     async getEventMailSchedules(eventId: string): Promise<MailSchedule[]> {
         try {
-            const found = await this.mailSchedulesRepository.findBy({ eventId, status: MailScheduleStatus.Queuing })
+            const found = await this.mailSchedulesRepository.findBy({ eventId })
             return found;
         } catch (error) {
             return null;
