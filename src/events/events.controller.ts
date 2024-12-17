@@ -7,6 +7,7 @@ import * as moment from 'moment'
 import { OrganizersService } from 'src/organizers/organizers.service';
 import { User } from 'src/auth/user.entity';
 import { UserRole } from 'src/auth/constants/user-role.constant';
+import { MailSchedulesService } from 'src/mail-schedules/mail-schedules.service';
 
 @Controller('events')
 export class EventsController {
@@ -14,6 +15,7 @@ export class EventsController {
     constructor(
         private eventsService: EventsService,
         private organizersService: OrganizersService,
+        private mailSchedulesService: MailSchedulesService,
     ) { }
 
     @Get()
@@ -123,9 +125,18 @@ export class EventsController {
         if (user.role !== UserRole.Admin && user.organizerId !== event.organizerId) {
             return res.redirect('.');
         }
-        
+
         const tickets = await this.eventsService.getTicketsByEventId(req.params?.eventId);
-        return res.render('tickets', { tickets: JSON.stringify(tickets), user: req.user, eventId: req.params?.eventId });
+        const schedules: any = await this.mailSchedulesService.getEventMailSchedules(req.params?.eventId);
+        (schedules || []).forEach(item => {
+            item.date = item.date?.toISOString().split('T')[0];
+        });
+        return res.render('tickets', {
+            tickets: JSON.stringify(tickets),
+            user: req.user,
+            eventId: req.params?.eventId,
+            schedules
+        });
     }
 
 

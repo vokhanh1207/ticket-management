@@ -9,6 +9,8 @@ import { TicketsRepository } from 'src/tickets/tickets.repository';
 import { MailService } from 'src/mail/mail.service';
 import { OrganizersService } from 'src/organizers/organizers.service';
 import { OrganizersRepository } from 'src/organizers/organizers.repository';
+import { MailSchedulesService } from 'src/mail-schedules/mail-schedules.service';
+import { MailSchedulesRepository } from 'src/mail-schedules/mail-schedules.repository';
 
 @Module({
   imports: [
@@ -17,7 +19,11 @@ import { OrganizersRepository } from 'src/organizers/organizers.repository';
     AuthModule
   ],
   controllers: [EventsController],
-  providers: [EventsService, EventsRepository, TicketsRepository, MailService, OrganizersService, OrganizersRepository],
+  providers: [EventsService, EventsRepository, TicketsRepository, MailService, OrganizersService,
+    OrganizersRepository,
+    MailSchedulesService,
+    MailSchedulesRepository
+  ],
   exports: [EventsService]
 })
 export class EventsModule {}

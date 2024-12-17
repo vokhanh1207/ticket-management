@@ -63,69 +63,88 @@
       <h2>Reminder email schedules</h2>
     </div>
 
-    <form>
-      <div class="d-flex justify-content-between gap-3">
-        <input type="date" class="form-control" placeholder="Date">
-        <select type="text" class="form-control" placeholder="Time">
-          <option value="0">12:00 am</option>
-          <option value="1">1:00 am</option>
-          <option value="2">2:00 am</option>
-          <option value="3">3:00 am</option>
-          <option value="4">4:00 am</option>
-          <option value="5">5:00 am</option>
-          <option value="6">6:00 am</option>
-          <option value="7">7:00 am</option>
-          <option value="8">8:00 am</option>
-          <option value="9">9:00 am</option>
-          <option value="10">10:00 am</option>
-          <option value="11">11:00 am</option>
-          <option value="12">12:00 pm</option>
-          <option value="13">1:00 pm</option>
-          <option value="14">2:00 pm</option>
-          <option value="15">3:00 pm</option>
-          <option value="16">4:00 pm</option>
-          <option value="17">5:00 pm</option>
-          <option value="18">6:00 pm</option>
-          <option value="19">7:00 pm</option>
-          <option value="20">8:00 pm</option>
-          <option value="21">9:00 pm</option>
-          <option value="22">10:00 pm</option>
-          <option value="23">11:00 pm</option>
-        </select>
-      </div>
-      <div class="d-flex justify-content-between gap-3 mt-3">
-        <input type="date" class="form-control" placeholder="Date">
-        <select type="text" class="form-control" placeholder="Time">
-          <option value="0">12:00 am</option>
-          <option value="1">1:00 am</option>
-          <option value="2">2:00 am</option>
-          <option value="3">3:00 am</option>
-          <option value="4">4:00 am</option>
-          <option value="5">5:00 am</option>
-          <option value="6">6:00 am</option>
-          <option value="7">7:00 am</option>
-          <option value="8">8:00 am</option>
-          <option value="9">9:00 am</option>
-          <option value="10">10:00 am</option>
-          <option value="11">11:00 am</option>
-          <option value="12">12:00 pm</option>
-          <option value="13">1:00 pm</option>
-          <option value="14">2:00 pm</option>
-          <option value="15">3:00 pm</option>
-          <option value="16">4:00 pm</option>
-          <option value="17">5:00 pm</option>
-          <option value="18">6:00 pm</option>
-          <option value="19">7:00 pm</option>
-          <option value="20">8:00 pm</option>
-          <option value="21">9:00 pm</option>
-          <option value="22">10:00 pm</option>
-          <option value="23">11:00 pm</option>
-        </select>
-      </div>
-      <button type="submit" class="btn btn-primary mt-3">
-        Save
+
+    <div class="d-flex justify-content-between gap-3 pt-3 mail-schedule-item d-none" id="mail-schedule-item-template">
+      <input class="schedule-id" value="" hidden>
+      <input type="date" class="form-control" placeholder="Date" required>
+      <select type="text" class="form-control" placeholder="Time">
+        <option value="0">12:00 am</option>
+        <option value="1">1:00 am</option>
+        <option value="2">2:00 am</option>
+        <option value="3">3:00 am</option>
+        <option value="4">4:00 am</option>
+        <option value="5">5:00 am</option>
+        <option value="6">6:00 am</option>
+        <option value="7">7:00 am</option>
+        <option value="8">8:00 am</option>
+        <option value="9">9:00 am</option>
+        <option value="10">10:00 am</option>
+        <option value="11">11:00 am</option>
+        <option value="12">12:00 pm</option>
+        <option value="13">1:00 pm</option>
+        <option value="14">2:00 pm</option>
+        <option value="15">3:00 pm</option>
+        <option value="16">4:00 pm</option>
+        <option value="17">5:00 pm</option>
+        <option value="18">6:00 pm</option>
+        <option value="19">7:00 pm</option>
+        <option value="20">8:00 pm</option>
+        <option value="21">9:00 pm</option>
+        <option value="22">10:00 pm</option>
+        <option value="23">11:00 pm</option>
+      </select>
+      <button type="button" class="btn btn-primary btn-block remove-schedule">
+        <i class="fa fa-minus" aria-hidden="true"></i>
       </button>
-    </form>
+    </div>
+    <div id="email-schedules">
+      {{#if schedules}}
+      {{#each schedules}}
+      <div class="d-flex justify-content-between gap-3 mail-schedule-item mt-3">
+        <input class="schedule-id" value="{{this.id}}" hidden>
+        <input type="date" class="form-control" placeholder="Date" value="{{this.date}}">
+        <select type="text" class="form-control" placeholder="Time" value="{{this.time}}">
+          <option value="0" {{#ifeq this.time 0}}selected{{/ifeq}}>12:00 am</option>
+          <option value="1" {{#ifeq this.time 1}}selected{{/ifeq}}>1:00 am</option>
+          <option value="2" {{#ifeq this.time 2}}selected{{/ifeq}}>2:00 am</option>
+          <option value="3" {{#ifeq this.time 3}}selected{{/ifeq}}>3:00 am</option>
+          <option value="4" {{#ifeq this.time 4}}selected{{/ifeq}}>4:00 am</option>
+          <option value="5" {{#ifeq this.time 5}}selected{{/ifeq}}>5:00 am</option>
+          <option value="6" {{#ifeq this.time 6}}selected{{/ifeq}}>6:00 am</option>
+          <option value="7" {{#ifeq this.time 7}}selected{{/ifeq}}>7:00 am</option>
+          <option value="8" {{#ifeq this.time 8}}selected{{/ifeq}}>8:00 am</option>
+          <option value="9" {{#ifeq this.time 9}}selected{{/ifeq}}>9:00 am</option>
+          <option value="10" {{#ifeq this.time 10}}selected{{/ifeq}}>10:00 am</option>
+          <option value="11" {{#ifeq this.time 11}}selected{{/ifeq}}>11:00 am</option>
+          <option value="12" {{#ifeq this.time 12}}selected{{/ifeq}}>12:00 pm</option>
+          <option value="13" {{#ifeq this.time 13}}selected{{/ifeq}}>1:00 pm</option>
+          <option value="14" {{#ifeq this.time 14}}selected{{/ifeq}}>2:00 pm</option>
+          <option value="15" {{#ifeq this.time 15}}selected{{/ifeq}}>3:00 pm</option>
+          <option value="16" {{#ifeq this.time 16}}selected{{/ifeq}}>4:00 pm</option>
+          <option value="17" {{#ifeq this.time 17}}selected{{/ifeq}}>5:00 pm</option>
+          <option value="18" {{#ifeq this.time 18}}selected{{/ifeq}}>6:00 pm</option>
+          <option value="19" {{#ifeq this.time 19}}selected{{/ifeq}}>7:00 pm</option>
+          <option value="20" {{#ifeq this.time 20}}selected{{/ifeq}}>8:00 pm</option>
+          <option value="21" {{#ifeq this.time 21}}selected{{/ifeq}}>9:00 pm</option>
+          <option value="22" {{#ifeq this.time 22}}selected{{/ifeq}}>10:00 pm</option>
+          <option value="23" {{#ifeq this.time 23}}selected{{/ifeq}}>11:00 pm</option>
+        </select>
+        <button type="button" class="btn btn-primary btn-block remove-schedule">
+          <i class="fa fa-minus" aria-hidden="true"></i>
+        </button>
+      </div>
+      {{/each}}
+      {{/if}}
+    </div>
+
+    <div class="d-flex justify-content-end gap-3 mt-3">
+      <button type="button" class="btn btn-primary btn-block" id="add-schedule">
+        <i class="fa fa-plus" aria-hidden="true"></i>
+      </button>
+    </div>
+    <button type="submit" class="btn btn-primary mt-3" id="save-schedules">
+      Save
+    </button>
   </section>
 </div>
 
@@ -159,7 +178,8 @@
   </div>
 </div>
 <script>
-  const tickets = {{{ tickets }}}
+  const tickets = {{{ tickets }}};
+  const eventId = "{{eventId}}";
 
   function getTicketHtml(tickets = []) {
     let html = '';
@@ -187,34 +207,87 @@
       const filteredTickets = (tickets || []).filter(item => {
         return (item.email || '').includes(input);
       });
-      console.log(filteredTickets)
 
       $('#tickets-table').find('tbody').html(getTicketHtml(filteredTickets));
     }, 200);
   });
   $('#num-of-checked-in').text(countStatus('CHECKED-IN'));
   $('#num-of-checked-out').text(countStatus('USED'));
+  $("#add-schedule").on("click", function (e) {
+    const html = $('#mail-schedule-item-template').clone();
+    $('#email-schedules').append(html);
+    $('.mail-schedule-item').last().attr('id', '').removeClass('d-none');
+  });
+
+  $("#save-schedules").on("click", function (e) {
+    const schedules = $('.mail-schedule-item').not('.d-none');
+    const dto = [];
+    schedules.each(function () {
+      const id = $(this).find('.schedule-id').val();
+      const dateInput = $(this).find('[type="date"]').val() || '';
+      const date = new Date(dateInput).toISOString();
+      const time = $(this).find('select').val();
+      dto.push({ eventId, id, date, time });
+    });
+
+    fetch(`${location.origin}/mail-schedules/${eventId}`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(dto)
+    })
+      .then(res => res.json())
+      .then(res => {rednerSchedules(res || [])
+      });
+  });
+
+  $('body').on('click', '.remove-schedule', function (e) {
+    const scheduleId = $(this).closest('.mail-schedule-item').find('.schedule-id').val();
+    fetch(`${location.origin}/mail-schedules/${eventId}/${scheduleId}`, {
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(res => res.json())
+      .then(res => rednerSchedules(res || []))
+  })
+
+  function rednerSchedules(items) {
+    $('#email-schedules').html('');
+    items.forEach(item => {
+      const html = $('#mail-schedule-item-template').clone();
+      $('#email-schedules').append(html);
+      const appendedItem = $('.mail-schedule-item').last();
+      appendedItem.attr('id', '').removeClass('d-none');
+      appendedItem.find('.schedule-id').val(item.id);
+      appendedItem.find('[type="date"]').val((item.date || '').split('T')[0]);
+      appendedItem.find('select').val(item.time);
+    });
+  }
 
   function countStatus(status) {
     return (tickets || []).filter(item => item.status == status).length;
   }
 
   function handleOnClickSendEmails() {
-    fetch(`${location.origin}/events/{{eventId}}/remind`)
-      .then(res => {
-        const messageEl = document.getElementById('bulk-emails-message');
-        let message = '';
-        if (res.status == 200) {
-          message = 'The emails are being sent in the background process.'
-        } else {
-          message = 'Something went wrong. Try again later.'
-        }
+    fetch(`${location.origin}/events/{{eventId}}/remind`).then(res => {
+      const messageEl = document.getElementById('bulk-emails-message');
+      let message = '';
+      if (res.status == 200) {
+        message = 'The emails are being sent in the background process.'
+      } else {
+        message = 'Something went wrong. Try again later.'
+      }
 
-        messageEl.innerHTML = message;
-        var toastEl = document.getElementById('liveToast');
-        var toast = new bootstrap.Toast(toastEl)
-        toast.show()
-      });
+      messageEl.innerHTML = message;
+      var toastEl = document.getElementById('liveToast');
+      var toast = new bootstrap.Toast(toastEl)
+      toast.show()
+    });
 
   }
 </script>

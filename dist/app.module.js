@@ -22,6 +22,7 @@ const user_repository_1 = require("./auth/user.repository");
 const organizers_module_1 = require("./organizers/organizers.module");
 const organizers_service_1 = require("./organizers/organizers.service");
 const organizers_repository_1 = require("./organizers/organizers.repository");
+const mail_schedules_module_1 = require("./mail-schedules/mail-schedules.module");
 let AppModule = exports.AppModule = class AppModule {
 };
 exports.AppModule = AppModule = __decorate([
@@ -31,6 +32,7 @@ exports.AppModule = AppModule = __decorate([
             events_module_1.EventsModule,
             auth_module_1.AuthModule,
             organizers_module_1.OrganizersModule,
+            mail_schedules_module_1.MailSchedulesModule,
             config_1.ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
             typeorm_1.TypeOrmModule.forRootAsync({
                 useFactory: (configService) => ({

@@ -18,6 +18,8 @@ const tickets_repository_1 = require("../tickets/tickets.repository");
 const mail_service_1 = require("../mail/mail.service");
 const organizers_service_1 = require("../organizers/organizers.service");
 const organizers_repository_1 = require("../organizers/organizers.repository");
+const mail_schedules_service_1 = require("../mail-schedules/mail-schedules.service");
+const mail_schedules_repository_1 = require("../mail-schedules/mail-schedules.repository");
 let EventsModule = exports.EventsModule = class EventsModule {
 };
 exports.EventsModule = EventsModule = __decorate([
@@ -28,7 +30,11 @@ exports.EventsModule = EventsModule = __decorate([
             auth_module_1.AuthModule
         ],
         controllers: [events_controller_1.EventsController],
-        providers: [events_service_1.EventsService, events_repository_1.EventsRepository, tickets_repository_1.TicketsRepository, mail_service_1.MailService, organizers_service_1.OrganizersService, organizers_repository_1.OrganizersRepository],
+        providers: [events_service_1.EventsService, events_repository_1.EventsRepository, tickets_repository_1.TicketsRepository, mail_service_1.MailService, organizers_service_1.OrganizersService,
+            organizers_repository_1.OrganizersRepository,
+            mail_schedules_service_1.MailSchedulesService,
+            mail_schedules_repository_1.MailSchedulesRepository
+        ],
         exports: [events_service_1.EventsService]
     })
 ], EventsModule);

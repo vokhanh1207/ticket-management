@@ -20,10 +20,12 @@ const create_ticket_dto_1 = require("../tickets/dto/create-ticket.dto");
 const moment = require("moment");
 const organizers_service_1 = require("../organizers/organizers.service");
 const user_role_constant_1 = require("../auth/constants/user-role.constant");
+const mail_schedules_service_1 = require("../mail-schedules/mail-schedules.service");
 let EventsController = exports.EventsController = class EventsController {
-    constructor(eventsService, organizersService) {
+    constructor(eventsService, organizersService, mailSchedulesService) {
         this.eventsService = eventsService;
         this.organizersService = organizersService;
+        this.mailSchedulesService = mailSchedulesService;
     }
     async showEvents(res, req) {
         const events = await this.eventsService.getEvents();
@@ -104,7 +106,16 @@ let EventsController = exports.EventsController = class EventsController {
             return res.redirect('.');
         }
         const tickets = await this.eventsService.getTicketsByEventId(req.params?.eventId);
-        return res.render('tickets', { tickets: JSON.stringify(tickets), user: req.user, eventId: req.params?.eventId });
+        const schedules = await this.mailSchedulesService.getEventMailSchedules(req.params?.eventId);
+        (schedules || []).forEach(item => {
+            item.date = item.date?.toISOString().split('T')[0];
+        });
+        return res.render('tickets', {
+            tickets: JSON.stringify(tickets),
+            user: req.user,
+            eventId: req.params?.eventId,
+            schedules
+        });
     }
     async remindTickets(eventId, req) {
         return await this.eventsService.sendRemindEmails(eventId, req.get('host'));
@@ -189,6 +200,7 @@ __decorate([
 exports.EventsController = EventsController = __decorate([
     (0, common_1.Controller)('events'),
     __metadata("design:paramtypes", [events_service_1.EventsService,
-        organizers_service_1.OrganizersService])
+        organizers_service_1.OrganizersService,
+        mail_schedules_service_1.MailSchedulesService])
 ], EventsController);
 //# sourceMappingURL=events.controller.js.map

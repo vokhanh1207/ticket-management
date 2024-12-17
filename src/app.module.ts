@@ -13,6 +13,7 @@ import { UserRepository } from './auth/user.repository';
 import { OrganizersModule } from './organizers/organizers.module';
 import { OrganizersService } from './organizers/organizers.service';
 import { OrganizersRepository } from './organizers/organizers.repository';
+import { MailSchedulesModule } from './mail-schedules/mail-schedules.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { OrganizersRepository } from './organizers/organizers.repository';
     EventsModule,
     AuthModule,
     OrganizersModule,
+    MailSchedulesModule,
     ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
     // TypeOrmModule.forRoot(
     //   {

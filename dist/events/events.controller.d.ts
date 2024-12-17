@@ -3,10 +3,12 @@ import { CreateEventDto } from './dto/create-event.dto';
 import { Response, Request } from 'express';
 import { CreateTicketDto } from 'src/tickets/dto/create-ticket.dto';
 import { OrganizersService } from 'src/organizers/organizers.service';
+import { MailSchedulesService } from 'src/mail-schedules/mail-schedules.service';
 export declare class EventsController {
     private eventsService;
     private organizersService;
-    constructor(eventsService: EventsService, organizersService: OrganizersService);
+    private mailSchedulesService;
+    constructor(eventsService: EventsService, organizersService: OrganizersService, mailSchedulesService: MailSchedulesService);
     showEvents(res: Response, req: Request): Promise<void>;
     showNewEvents(res: Response, req: Request): Promise<void>;
     createNewEvents(createEventDto: CreateEventDto, res: Response, req: Request, headers: any): Promise<void>;
