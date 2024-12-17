@@ -16,11 +16,15 @@ const constants_1 = require("./dto/constants");
 const LessThan_1 = require("typeorm/find-options/operator/LessThan");
 const events_service_1 = require("../events/events.service");
 const config_1 = require("@nestjs/config");
+const schedule_1 = require("@nestjs/schedule");
 let MailSchedulesService = exports.MailSchedulesService = class MailSchedulesService {
     constructor(mailSchedulesRepository, eventsService, configService) {
         this.mailSchedulesRepository = mailSchedulesRepository;
         this.eventsService = eventsService;
         this.configService = configService;
+    }
+    handleCron() {
+        console.log('asdfasdfasdf sdfsadfasd send mail');
         this.sendMailSchudles();
     }
     async getEventMailSchedules(eventId) {
@@ -89,6 +93,12 @@ let MailSchedulesService = exports.MailSchedulesService = class MailSchedulesSer
         return mailSchedules;
     }
 };
+__decorate([
+    (0, schedule_1.Cron)(schedule_1.CronExpression.EVERY_10_SECONDS, { name: 'remindEmails' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], MailSchedulesService.prototype, "handleCron", null);
 exports.MailSchedulesService = MailSchedulesService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [mail_schedules_repository_1.MailSchedulesRepository,

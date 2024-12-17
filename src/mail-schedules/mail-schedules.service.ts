@@ -6,6 +6,7 @@ import { MailScheduleDto } from './dto/mail-schedule.dto';
 import { LessThan } from 'typeorm/find-options/operator/LessThan';
 import { EventsService } from 'src/events/events.service';
 import { ConfigService } from '@nestjs/config';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class MailSchedulesService {
@@ -13,7 +14,11 @@ export class MailSchedulesService {
         private mailSchedulesRepository: MailSchedulesRepository,
         private eventsService: EventsService,
         private configService: ConfigService
-    ) {
+    ) {}
+
+    @Cron(CronExpression.EVERY_10_SECONDS, { name: 'remindEmails'})
+    handleCron() {
+        console.log('asdfasdfasdf sdfsadfasd send mail')
         this.sendMailSchudles();
     }
 

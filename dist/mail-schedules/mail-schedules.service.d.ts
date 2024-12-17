@@ -8,6 +8,7 @@ export declare class MailSchedulesService {
     private eventsService;
     private configService;
     constructor(mailSchedulesRepository: MailSchedulesRepository, eventsService: EventsService, configService: ConfigService);
+    handleCron(): void;
     getEventMailSchedules(eventId: string): Promise<MailSchedule[]>;
     createEventMailSchedules(createSchedule: MailScheduleDto): Promise<MailSchedule>;
     updateMailSchedule(id: string, updatedSchedule: MailScheduleDto): Promise<MailSchedule>;

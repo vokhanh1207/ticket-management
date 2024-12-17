@@ -14,6 +14,7 @@ import { OrganizersModule } from './organizers/organizers.module';
 import { OrganizersService } from './organizers/organizers.service';
 import { OrganizersRepository } from './organizers/organizers.repository';
 import { MailSchedulesModule } from './mail-schedules/mail-schedules.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { MailSchedulesModule } from './mail-schedules/mail-schedules.module';
     AuthModule,
     OrganizersModule,
     MailSchedulesModule,
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
     // TypeOrmModule.forRoot(
     //   {

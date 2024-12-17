@@ -10,26 +10,6 @@ export class MailSchedulesController {
         private mailSchedulesService: MailSchedulesService,
     ) { }
 
-    // @Get(':eventId')
-    // async registerEvent(
-    //     @Body() createTicketDto: CreateTicketDto,
-    //     @Req() req: Request,
-    //     @Res() res: Response,
-    //     @Headers() headers) {
-    //     const eventId = req.params?.eventId;
-    //     const schedules = await this.mailSchedulesService.getEventMailSchedules(eventId);
-    //     if (ticket) {
-    //         return res.redirect('/tickets/' + ticket.id);
-    //     } else {
-    //         const event = await this.eventsService.getEventById(req.params?.eventId);
-    //         return res.render('event-details', {
-    //             event,
-    //             user: req.user,
-    //             message: 'The email provided has already been registered for this event.'
-    //         });
-    //     }
-    // }
-
     @Post('/:eventId')
     async upsertMailSchedules(
         @Body() createMailSchedules: MailScheduleDto[] = [],
