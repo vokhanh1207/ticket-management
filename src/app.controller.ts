@@ -71,23 +71,34 @@ export class AppController {
 
   @Get('add-user')
   async showAddUser(@Res() res: Response, @Req() req: Request, @Body() userDto: CreateUserDto) {
-    if (!req.user) {
+    if (!req.user && (req.user as User)?.role !== UserRole.Admin && (req.user as User)?.role !== UserRole.OrganizerAdmin) {
       return res.redirect('/events');
     }
     const organizers = await this.organizerService.getOrganizers();
+    let roles = Object.values(UserRole);
+
+    if ((req.user as User).role === UserRole.OrganizerAdmin) {
+      roles = roles.filter(item => item !== UserRole.Admin);
+    }
+
+    console.log(roles);
     return res.render('add-user', {
       user: req.user,
-      roles: Object.values(UserRole),
+      roles,
       organizers
     });
   }
 
   @Post('add-user')
   async addUser(@Res() res: Response, @Req() req: Request, @Body() userDto: CreateUserDto) {
-    if (!req.user && (req.user as User).role !== UserRole.Admin) {
+    if (!req.user && (req.user as User).role !== UserRole.Admin && (req.user as User).role !== UserRole.OrganizerAdmin) {
       return res.redirect('/events');
     }
     let message = '';
+    if ((req.user as User).role === UserRole.OrganizerAdmin && userDto.role === UserRole.Admin) {
+      message = 'You are not allowed to assign the admin role to a user.';
+      return res.render('add-user', { user: req.user, message });
+    }
     try {
       const user = await this.authService.signUp(userDto, req.user as User);
       message = 'User created successfully';

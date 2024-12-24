@@ -62,21 +62,30 @@ let AppController = exports.AppController = class AppController {
         return res.render('my-profile', { user: updatedUser });
     }
     async showAddUser(res, req, userDto) {
-        if (!req.user) {
+        if (!req.user && req.user?.role !== user_role_constant_1.UserRole.Admin && req.user?.role !== user_role_constant_1.UserRole.OrganizerAdmin) {
             return res.redirect('/events');
         }
         const organizers = await this.organizerService.getOrganizers();
+        let roles = Object.values(user_role_constant_1.UserRole);
+        if (req.user.role === user_role_constant_1.UserRole.OrganizerAdmin) {
+            roles = roles.filter(item => item !== user_role_constant_1.UserRole.Admin);
+        }
+        console.log(roles);
         return res.render('add-user', {
             user: req.user,
-            roles: Object.values(user_role_constant_1.UserRole),
+            roles,
             organizers
         });
     }
     async addUser(res, req, userDto) {
-        if (!req.user && req.user.role !== user_role_constant_1.UserRole.Admin) {
+        if (!req.user && req.user.role !== user_role_constant_1.UserRole.Admin && req.user.role !== user_role_constant_1.UserRole.OrganizerAdmin) {
             return res.redirect('/events');
         }
         let message = '';
+        if (req.user.role === user_role_constant_1.UserRole.OrganizerAdmin && userDto.role === user_role_constant_1.UserRole.Admin) {
+            message = 'You are not allowed to assign the admin role to a user.';
+            return res.render('add-user', { user: req.user, message });
+        }
         try {
             const user = await this.authService.signUp(userDto, req.user);
             message = 'User created successfully';

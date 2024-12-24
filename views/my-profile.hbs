@@ -8,6 +8,11 @@
           <i class="fa fa-plus" aria-hidden="true"></i>
         </a>
         {{/ifeq}}
+        {{#ifeq user.role 'ORGANIZER_ADMIN'}}
+        <a href="/add-user" type="button" class="btn btn-primary btn-block">
+          <i class="fa fa-plus" aria-hidden="true"></i>
+        </a>
+        {{/ifeq}}
       </div>
       <div class="">
         <form method="post" action="my-profile">
