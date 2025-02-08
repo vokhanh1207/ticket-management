@@ -8,10 +8,10 @@ a {
 }
 
 .footer {
-    bottom: 0;
     width: 100%;
     background: #000000;
     color: white;
+    position: relative;
 }
 .event-item {
     height: 140px;
@@ -83,6 +83,7 @@ header {
 }
 .event-banner-inner {
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
 .event-banner-inner img{
