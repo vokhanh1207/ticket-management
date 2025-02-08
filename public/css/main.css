@@ -16,6 +16,7 @@ a {
 .event-item {
     height: 140px;
     background-size: cover;
+    background-position: center;
 }
 .content {
     min-height: calc(100vh - 120px);
