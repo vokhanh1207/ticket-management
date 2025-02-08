@@ -86,7 +86,7 @@ let EventsController = exports.EventsController = class EventsController {
             return res.redirect('.');
         }
         const event = await this.eventsService.getEventById(req.params?.eventId);
-        if (user.organizerId !== event.organizerId) {
+        if (user.role !== user_role_constant_1.UserRole.Admin && user.organizerId !== event.organizerId) {
             return res.redirect('.');
         }
         return res.render('new-event', { event, user: req.user });

@@ -99,7 +99,7 @@ export class EventsController {
             return res.redirect('.');
         }
         const event = await this.eventsService.getEventById(req.params?.eventId);
-        if (user.organizerId !== event.organizerId) {
+        if (user.role !== UserRole.Admin && user.organizerId !== event.organizerId) {
             return res.redirect('.');
         }
 
