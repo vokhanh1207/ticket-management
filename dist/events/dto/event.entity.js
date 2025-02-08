@@ -14,7 +14,7 @@ const typeorm_1 = require("typeorm");
 let Event = exports.Event = class Event {
 };
 __decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
+    (0, typeorm_1.PrimaryGeneratedColumn)('increment'),
     __metadata("design:type", String)
 ], Event.prototype, "id", void 0);
 __decorate([
@@ -25,6 +25,10 @@ __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Event.prototype, "createdBy", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true, type: 'datetime' }),
+    __metadata("design:type", Date)
+], Event.prototype, "cratedAt", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true, type: 'longtext' }),
     __metadata("design:type", String)
@@ -53,6 +57,10 @@ __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Event.prototype, "organizerId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Event.prototype, "bannerImage", void 0);
 exports.Event = Event = __decorate([
     (0, typeorm_1.Entity)()
 ], Event);

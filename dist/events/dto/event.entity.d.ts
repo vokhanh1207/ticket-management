@@ -2,6 +2,7 @@ export declare class Event {
     id: string;
     name: string;
     createdBy: string;
+    cratedAt?: Date;
     description?: string;
     startTime?: Date;
     duration?: number;
@@ -9,4 +10,5 @@ export declare class Event {
     status?: string;
     qr?: string;
     organizerId?: string;
+    bannerImage?: string;
 }

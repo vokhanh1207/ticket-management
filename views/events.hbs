@@ -15,7 +15,15 @@
         {{#each events}}
         <div class="col-md-4 mb-3">
           <div class="card h-100">
-            <div style="height: 140px;" class="card-img-top event-item" ></div>
+            <div class="card-img-top event-item"
+            style="background-image: url(
+            {{#if this.bannerImage}}
+              '{{this.bannerImage}}'
+            {{else}}
+              '/images/event-item.webp'
+            {{/if}}
+            );"
+            ></div>
             <div class="card-body">
               <h5 class="card-title">{{this.name}}</h5>
               <div class="text-secondery mt-3">

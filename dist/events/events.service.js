@@ -56,23 +56,24 @@ let EventsService = exports.EventsService = class EventsService {
             location: createEventDto.location,
             duration: createEventDto.duration,
             organizerId: createEventDto.organizerId,
+            cratedAt: new Date(),
             createdBy: username
         });
         const dbEvent = await this.eventsRepository.save(event);
-        fs.mkdirSync(`${constants_1.TICKET_QR_DIR}/${event.id}`);
-        await QRCode.toFile(`${constants_1.EVENT_QR_DIR}/${event.id}.png`, `${origin}/events/${event.id}`, {
+        fs.mkdirSync(`${constants_1.EVENT_IMAGES_DIR}/${event.id}/tickets`, { recursive: true });
+        await QRCode.toFile(`${constants_1.EVENT_IMAGES_DIR}/${event.id}/${event.id}.png`, `${origin}/events/${event.id}`, {
             width: 260,
             margin: 2
         });
-        dbEvent.qr = `${origin}/qr/events/${event.id}.png`;
+        dbEvent.qr = `${origin}/images/events/${event.id}/${event.id}.png`;
         await this.eventsRepository.save(event);
         return dbEvent;
     }
-    async updateEvent(eventId, createEventDto) {
+    async updateEvent(eventId, updateEventDto) {
         const dbEvent = await this.getEventById(eventId);
         return await this.eventsRepository.save({
             ...dbEvent,
-            ...createEventDto
+            ...updateEventDto
         });
     }
     async regisiterEvent(createTicketDto, origin) {
@@ -83,6 +84,9 @@ let EventsService = exports.EventsService = class EventsService {
     async sendRemindEmails(eventId, origin) {
         const event = await this.getEventById(eventId);
         return this.ticketsService.sendRemindEmails(event, origin);
+    }
+    async updateBanner(eventId, bannerImage) {
+        return this.updateEvent(eventId, { bannerImage });
     }
 };
 exports.EventsService = EventsService = __decorate([

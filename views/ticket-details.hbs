@@ -43,6 +43,22 @@
           <span class="fw-lighter">{{ticket.email}}</span>
         </div>
         <div class="mt-2">
+          <i class="fa fa-sign-in text-primary " aria-hidden="true" style="width: 20px;"></i>
+          {{#if ticket.checkInTime}}
+            <span class="fw-lighter">{{formatDate ticket.checkInTime 'HH:mm, MMM Do YYYY'}}</span>
+          {{else}}
+            <span class="fw-lighter">Not check-in yet</span>
+          {{/if}}
+        </div>
+        <div class="mt-2">
+          <i class="fa fa-sign-out text-primary" aria-hidden="true" style="width: 20px;"></i>
+          {{#if ticket.checkOutTime}}
+            <span class="fw-lighter">{{formatDate ticket.checkOutTime 'HH:mm, MMM Do YYYY'}}</span>
+          {{else}}
+            <span class="fw-lighter">Not check-out yet</span>
+          {{/if}}
+        </div>
+        <div class="mt-2">
           <i class="fa fa-qrcode text-primary " aria-hidden="true" style="width: 20px;"></i>
           <span class="fw-lighter">{{ticket.id}}</span>
         </div>

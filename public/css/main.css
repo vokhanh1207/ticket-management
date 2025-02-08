@@ -14,7 +14,7 @@ a {
     color: white;
 }
 .event-item {
-    background-image: url(/images/event-item.webp);
+    height: 140px;
     background-size: cover;
 }
 .content {
@@ -59,4 +59,33 @@ header {
 
 .status-EXPIRED {
     background-color: RGBA(var(--bs-info-rgb),var(--bs-bg-opacity,1))!important;
+}
+
+.container {
+    color: black;
+}
+
+.event-banner {
+    height: 400px;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    margin-top: -3rem;
+    position: relative;
+}
+
+.banner-actions {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    position: absolute;
+}
+.event-banner-inner {
+    backdrop-filter: blur(10px);
+}
+
+.event-banner-inner img{
+    height: 400px;
+    max-width: 100%;
+    object-fit: cover;
 }

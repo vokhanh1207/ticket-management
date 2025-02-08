@@ -21,6 +21,10 @@ const moment = require("moment");
 const organizers_service_1 = require("../organizers/organizers.service");
 const user_role_constant_1 = require("../auth/constants/user-role.constant");
 const mail_schedules_service_1 = require("../mail-schedules/mail-schedules.service");
+const platform_express_1 = require("@nestjs/platform-express");
+const multer_1 = require("multer");
+const path_1 = require("path");
+const fs = require("fs");
 let EventsController = exports.EventsController = class EventsController {
     constructor(eventsService, organizersService, mailSchedulesService) {
         this.eventsService = eventsService;
@@ -36,7 +40,6 @@ let EventsController = exports.EventsController = class EventsController {
             return res.redirect('.');
         }
         const organizers = await this.organizersService.getOrganizers();
-        console.log('organizers', organizers);
         return res.render('new-event', { user: req.user, organizers: organizers });
     }
     async createNewEvents(createEventDto, res, req, headers) {
@@ -120,6 +123,15 @@ let EventsController = exports.EventsController = class EventsController {
     async remindTickets(eventId, req) {
         return await this.eventsService.sendRemindEmails(eventId, req.get('host'));
     }
+    async uploadFile(eventId, file) {
+        if (!file) {
+            return { message: 'Banner upload failed' };
+        }
+        const imageUrl = `/images/events/${eventId}/${file.filename}`;
+        const event = await this.eventsService.updateBanner(eventId, imageUrl);
+        return { message: 'Banner uploaded successfully', event };
+        ;
+    }
 };
 __decorate([
     (0, common_1.Get)(),
@@ -197,6 +209,28 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], EventsController.prototype, "remindTickets", null);
+__decorate([
+    (0, common_1.Post)(':eventId/upload-banner'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file', {
+        storage: (0, multer_1.diskStorage)({
+            destination: (req, file, cb) => {
+                const eventId = req.params.eventId;
+                const uploadPath = `./public/images/events/${eventId}`;
+                fs.mkdirSync(uploadPath, { recursive: true });
+                cb(null, uploadPath);
+            },
+            filename: (req, file, cb) => {
+                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+                cb(null, uniqueSuffix + (0, path_1.extname)(file.originalname));
+            },
+        }),
+    })),
+    __param(0, (0, common_1.Param)('eventId')),
+    __param(1, (0, common_1.UploadedFile)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], EventsController.prototype, "uploadFile", null);
 exports.EventsController = EventsController = __decorate([
     (0, common_1.Controller)('events'),
     __metadata("design:paramtypes", [events_service_1.EventsService,

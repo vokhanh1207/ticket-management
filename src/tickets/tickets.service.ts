@@ -11,6 +11,7 @@ import { ISendMailOptions } from '@nestjs-modules/mailer';
 import { Event } from 'src/events/dto/event.entity';
 import { formatDate } from 'src/utils.ts/format-date.util';
 import * as moment from 'moment'
+import { EVENT_IMAGES_DIR } from 'src/utils.ts/constants';
 
 @Injectable()
 export class TicketsService {
@@ -63,14 +64,14 @@ export class TicketsService {
         const dbTicket: Ticket = await this.ticketsRepository.save(ticket);
 
         await QRCode.toFile(
-            `${process.cwd()}/public/qr/tickets/${event.id}/${ticket.id}.png`,
-            `${origin}/qr/tickets/${dbTicket.id}/on-scan`,
+            `${EVENT_IMAGES_DIR}/${event.id}/tickets/${ticket.id}.png`,
+            `${origin}/tickets/${dbTicket.id}/on-scan`,
             {
                 width: 260,
                 margin: 2
             }
         );
-        dbTicket.qr = `${origin}/qr/tickets/${event.id}/${ticket.id}.png`;
+        dbTicket.qr = `${origin}/images/events/${event.id}/tickets/${ticket.id}.png`;
 
         await this.ticketsRepository.save(dbTicket);
 

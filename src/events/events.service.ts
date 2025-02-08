@@ -9,7 +9,8 @@ import { CreateTicketDto } from 'src/tickets/dto/create-ticket.dto';
 import { TicketsService } from 'src/tickets/tickets.service';
 import * as fs from 'fs'
 import * as QRCode from 'qrcode';
-import { EVENT_QR_DIR, TICKET_QR_DIR } from 'src/utils.ts/constants';
+import { EVENT_IMAGES_DIR } from 'src/utils.ts/constants';
+import { UpdateEventDto } from './dto/update-event.dto';
 
 @Injectable()
 export class EventsService {
@@ -56,33 +57,34 @@ export class EventsService {
             location: createEventDto.location,
             duration: createEventDto.duration,
             organizerId: createEventDto.organizerId,
+            cratedAt: new Date(),
             createdBy: username
         });
 
         const dbEvent = await this.eventsRepository.save(event);
         // create folder for ticket QR codes
-        fs.mkdirSync(`${TICKET_QR_DIR}/${event.id}`);
+        fs.mkdirSync(`${EVENT_IMAGES_DIR}/${event.id}/tickets`, { recursive: true });
 
         await QRCode.toFile(
-            `${EVENT_QR_DIR}/${event.id}.png`,
+            `${EVENT_IMAGES_DIR}/${event.id}/${event.id}.png`,
             `${origin}/events/${event.id}`,
             {
                 width: 260,
                 margin: 2
             }
         );
-        dbEvent.qr = `${origin}/qr/events/${event.id}.png`;
+        dbEvent.qr = `${origin}/images/events/${event.id}/${event.id}.png`;
         await this.eventsRepository.save(event);
 
         return dbEvent;
     }
 
-    async updateEvent(eventId: string, createEventDto: CreateEventDto): Promise<Event> {
+    async updateEvent(eventId: string, updateEventDto: UpdateEventDto): Promise<Event> {
         const dbEvent = await this.getEventById(eventId);
 
         return await this.eventsRepository.save({
             ...dbEvent,
-            ...createEventDto
+            ...updateEventDto
         });
     }
 
@@ -96,5 +98,9 @@ export class EventsService {
     async sendRemindEmails(eventId: string, origin: string): Promise<boolean> {
         const event = await this.getEventById(eventId);
         return this.ticketsService.sendRemindEmails(event, origin)
+    }
+
+    async updateBanner(eventId: string, bannerImage: string): Promise<Event> {
+        return this.updateEvent(eventId, {bannerImage})
     }
 }

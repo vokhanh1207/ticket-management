@@ -1,3 +1,4 @@
+/// <reference types="multer" />
 import { EventsService } from './events.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { Response, Request } from 'express';
@@ -18,4 +19,11 @@ export declare class EventsController {
     editEvent(res: Response, req: Request, createEventDto: CreateEventDto): Promise<void>;
     getEventTickets(res: Response, req: Request): Promise<void>;
     remindTickets(eventId: string, req: Request): Promise<boolean>;
+    uploadFile(eventId: string, file: Express.Multer.File): Promise<{
+        message: string;
+        event?: undefined;
+    } | {
+        message: string;
+        event: import("./dto/event.entity").Event;
+    }>;
 }

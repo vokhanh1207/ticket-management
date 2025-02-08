@@ -23,6 +23,7 @@ const constants_1 = require("./constants");
 const mail_service_1 = require("../mail/mail.service");
 const format_date_util_1 = require("../utils.ts/format-date.util");
 const moment = require("moment");
+const constants_2 = require("../utils.ts/constants");
 let TicketsService = exports.TicketsService = class TicketsService {
     constructor(ticketsRepository, mailService, configService) {
         this.ticketsRepository = ticketsRepository;
@@ -65,11 +66,11 @@ let TicketsService = exports.TicketsService = class TicketsService {
             createdAt: moment(new Date).toDate().toISOString()
         });
         const dbTicket = await this.ticketsRepository.save(ticket);
-        await QRCode.toFile(`${process.cwd()}/public/qr/tickets/${event.id}/${ticket.id}.png`, `${origin}/qr/tickets/${dbTicket.id}/on-scan`, {
+        await QRCode.toFile(`${constants_2.EVENT_IMAGES_DIR}/${event.id}/tickets/${ticket.id}.png`, `${origin}/tickets/${dbTicket.id}/on-scan`, {
             width: 260,
             margin: 2
         });
-        dbTicket.qr = `${origin}/qr/tickets/${event.id}/${ticket.id}.png`;
+        dbTicket.qr = `${origin}/images/events/${event.id}/tickets/${ticket.id}.png`;
         await this.ticketsRepository.save(dbTicket);
         const mailOptions = this.getTicketMailOptions(dbTicket, event, origin);
         this.mailService.sendMail(mailOptions);

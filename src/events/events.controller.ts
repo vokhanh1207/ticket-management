@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, Res, Headers } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, Res, Headers, UseInterceptors, UploadedFile, Param } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { Response, Request } from 'express';
@@ -8,6 +8,10 @@ import { OrganizersService } from 'src/organizers/organizers.service';
 import { User } from 'src/auth/user.entity';
 import { UserRole } from 'src/auth/constants/user-role.constant';
 import { MailSchedulesService } from 'src/mail-schedules/mail-schedules.service';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
+import * as fs from 'fs';
 
 @Controller('events')
 export class EventsController {
@@ -32,7 +36,6 @@ export class EventsController {
             return res.redirect('.');
         }
         const organizers = await this.organizersService.getOrganizers();
-        console.log('organizers', organizers)
         return res.render('new-event', { user: req.user, organizers: organizers });
     }
 
@@ -143,5 +146,39 @@ export class EventsController {
     @Get(':eventId/remind')
     async remindTickets(eventId: string, @Req() req: Request): Promise<boolean> {
         return await this.eventsService.sendRemindEmails(eventId, req.get('host'));
+    }
+
+    @Post(':eventId/upload-banner')
+    @UseInterceptors(
+        FileInterceptor('file', {
+            storage: diskStorage({
+                destination: (req, file, cb) => {
+                    const eventId = req.params.eventId;
+                    const uploadPath = `./public/images/events/${eventId}`;
+
+                    // Ensure the directory exists
+                    fs.mkdirSync(uploadPath, { recursive: true });
+
+                    cb(null, uploadPath);
+                },
+                filename: (req, file, cb) => {
+                    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+                    cb(null, uniqueSuffix + extname(file.originalname));
+                },
+            }),
+        }),
+    )
+    async uploadFile(@Param('eventId') eventId: string, @UploadedFile() file: Express.Multer.File) {
+        if (!file) {
+            return { message: 'Banner upload failed' };
+        }
+
+        // Construct the public image URL (assuming static files are served)
+        const imageUrl = `/images/events/${eventId}/${file.filename}`;
+
+        // Save image URL to the database
+        const event = await this.eventsService.updateBanner(eventId, imageUrl);
+
+        return { message: 'Banner uploaded successfully', event };;
     }
 }

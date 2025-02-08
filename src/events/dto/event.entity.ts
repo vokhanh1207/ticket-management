@@ -3,7 +3,7 @@ import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Event {
-    @PrimaryGeneratedColumn('uuid')
+    @PrimaryGeneratedColumn('increment')
     id: string;
 
     @Column()
@@ -11,6 +11,9 @@ export class Event {
 
     @Column({ nullable: true })
     createdBy: string;
+
+    @Column({ nullable: true, type: 'datetime' })
+    cratedAt?: Date;
 
     @Column({ nullable: true, type: 'longtext' })
     description?: string;
@@ -32,4 +35,7 @@ export class Event {
 
     @Column({nullable: true})
     organizerId?: string;
+
+    @Column({nullable: true})
+    bannerImage?: string;
 }

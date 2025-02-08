@@ -15,6 +15,7 @@ import { OrganizersService } from './organizers/organizers.service';
 import { OrganizersRepository } from './organizers/organizers.repository';
 import { MailSchedulesModule } from './mail-schedules/mail-schedules.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
