@@ -222,13 +222,18 @@
   $("#save-schedules").on("click", function (e) {
     const schedules = $('.mail-schedule-item').not('.d-none');
     const dto = [];
-    schedules.each(function () {
-      const id = $(this).find('.schedule-id').val();
-      const dateInput = $(this).find('[type="date"]').val() || '';
-      const date = new Date(dateInput).toISOString();
-      const time = $(this).find('select').val();
-      dto.push({ eventId, id, date, time });
-    });
+    try {
+      schedules.each(function () {
+        const id = $(this).find('.schedule-id').val();
+        const dateInput = $(this).find('[type="date"]').val() || '';
+        const date = new Date(dateInput).toISOString();
+        const time = $(this).find('select').val();
+        dto.push({ eventId, id, date, time });
+      });
+    } catch (error) {
+      showToastMessage(error);
+      return;
+    }
 
     fetch(`${location.origin}/mail-schedules/${eventId}`, {
       method: 'POST',
@@ -247,7 +252,7 @@
           return [];
         }
       })
-      .then(res => {rednerSchedules(res)
+      .then(res => {renderSchedules(res)
       });
   });
 
@@ -269,10 +274,10 @@
           return [];
         }
       })
-      .then(res => rednerSchedules(res))
+      .then(res => renderSchedules(res))
   })
 
-  function rednerSchedules(items) {
+  function renderSchedules(items) {
     $('#email-schedules').html('');
     items.forEach(item => {
       const html = $('#mail-schedule-item-template').clone();
