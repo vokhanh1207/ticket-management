@@ -28,7 +28,7 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)({ nullable: true, type: 'datetime' }),
     __metadata("design:type", Date)
-], Event.prototype, "cratedAt", void 0);
+], Event.prototype, "createdAt", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true, type: 'longtext' }),
     __metadata("design:type", String)

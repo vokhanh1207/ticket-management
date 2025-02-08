@@ -50,7 +50,10 @@ let EventsController = exports.EventsController = class EventsController {
             createEventDto.organizerId = req.user.organizerId;
         }
         const event = await this.eventsService.createEvent(createEventDto, req.user.username, headers.origin);
-        return res.redirect('/events/' + event.id);
+        return res.status(common_1.HttpStatus.CREATED).json({
+            message: "Event created successfully",
+            data: event
+        });
     }
     async getEvent(res, req) {
         const event = await this.eventsService.getEventById(req.params?.eventId);
@@ -89,7 +92,11 @@ let EventsController = exports.EventsController = class EventsController {
         if (user.role !== user_role_constant_1.UserRole.Admin && user.organizerId !== event.organizerId) {
             return res.redirect('.');
         }
-        return res.render('new-event', { event, user: req.user });
+        let organizers = [];
+        if (user?.role === user_role_constant_1.UserRole.Admin) {
+            organizers = await this.organizersService.getOrganizers();
+        }
+        return res.render('new-event', { event, user: req.user, organizers });
     }
     async editEvent(res, req, createEventDto) {
         if (!req.user) {
@@ -97,7 +104,10 @@ let EventsController = exports.EventsController = class EventsController {
         }
         createEventDto.startTime = moment(createEventDto.startTime).toDate().toISOString();
         const event = await this.eventsService.updateEvent(req.params?.eventId, createEventDto);
-        return res.redirect('/events/' + req.params?.eventId);
+        return res.status(common_1.HttpStatus.OK).json({
+            message: "Event updated successfully",
+            data: event
+        });
     }
     async getEventTickets(res, req) {
         const user = req.user;
@@ -130,7 +140,6 @@ let EventsController = exports.EventsController = class EventsController {
         const imageUrl = `/images/events/${eventId}/${file.filename}`;
         const event = await this.eventsService.updateBanner(eventId, imageUrl);
         return { message: 'Banner uploaded successfully', event };
-        ;
     }
 };
 __decorate([

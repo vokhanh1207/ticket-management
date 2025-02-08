@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, Res, Headers, UseInterceptors, UploadedFile, Param } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, Res, Headers, UseInterceptors, UploadedFile, Param, HttpStatus, HttpCode } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { Response, Request } from 'express';
@@ -12,6 +12,7 @@ import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import * as fs from 'fs';
+import { Organizer } from 'src/organizers/dto/organizer.entity';
 
 @Controller('events')
 export class EventsController {
@@ -52,8 +53,12 @@ export class EventsController {
         if ((req.user as User).role !== UserRole.Admin) {
             createEventDto.organizerId = (req.user as User).organizerId;
         }
+        
         const event = await this.eventsService.createEvent(createEventDto, (req.user as any).username, headers.origin);
-        return res.redirect('/events/' + event.id);
+        return res.status(HttpStatus.CREATED).json({
+            message: "Event created successfully",
+            data: event
+        });
     }
 
     @Get(':eventId')
@@ -103,7 +108,12 @@ export class EventsController {
             return res.redirect('.');
         }
 
-        return res.render('new-event', { event, user: req.user });
+        let organizers = [];
+        if (user?.role === UserRole.Admin) {
+            organizers = await this.organizersService.getOrganizers() as Organizer[];
+        }
+
+        return res.render('new-event', { event, user: req.user, organizers });
     }
 
     @Post(':eventId/edit')
@@ -114,7 +124,10 @@ export class EventsController {
         createEventDto.startTime = moment(createEventDto.startTime).toDate().toISOString();
         const event = await this.eventsService.updateEvent(req.params?.eventId, createEventDto);
 
-        return res.redirect('/events/' + req.params?.eventId);
+        return res.status(HttpStatus.OK).json({
+            message: "Event updated successfully",
+            data: event
+        });
     }
 
     @Get(':eventId/tickets')
@@ -179,6 +192,6 @@ export class EventsController {
         // Save image URL to the database
         const event = await this.eventsService.updateBanner(eventId, imageUrl);
 
-        return { message: 'Banner uploaded successfully', event };;
+        return { message: 'Banner uploaded successfully', event };
     }
 }

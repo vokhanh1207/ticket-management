@@ -41,6 +41,9 @@ let EventsService = exports.EventsService = class EventsService {
         const events = await this.eventsRepository.find({
             where: {
                 startTime: (0, typeorm_1.MoreThan)(new Date())
+            },
+            order: {
+                createdAt: "DESC"
             }
         });
         return events;
@@ -56,7 +59,7 @@ let EventsService = exports.EventsService = class EventsService {
             location: createEventDto.location,
             duration: createEventDto.duration,
             organizerId: createEventDto.organizerId,
-            cratedAt: new Date(),
+            createdAt: new Date(),
             createdBy: username
         });
         const dbEvent = await this.eventsRepository.save(event);

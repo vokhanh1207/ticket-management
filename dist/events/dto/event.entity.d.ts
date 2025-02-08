@@ -2,7 +2,7 @@ export declare class Event {
     id: string;
     name: string;
     createdBy: string;
-    cratedAt?: Date;
+    createdAt?: Date;
     description?: string;
     startTime?: Date;
     duration?: number;

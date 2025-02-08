@@ -1,3 +1,23 @@
+<div class="event-banner text-center mb-5" id="eventBanner" style="
+  background-image: url(
+    {{#if event.bannerImage}}
+      {{event.bannerImage}}
+    {{else}}
+      '/images/ticket-wp.jpg'
+    {{/if}}
+  );
+  " alt="Banner image">
+
+  <div class="event-banner-inner">
+    <img id="bannerImage" src={{#if event.bannerImage}} {{event.bannerImage}} {{else}} '/images/ticket-wp.jpg' {{/if}}>
+  </div>
+  <form class="banner-actions">
+    <input accept="image/*" type='file' id="imgInp" style="display:none" />
+    <a id="editBanner" class="btn btn-primary btn-inline">
+      Select an image
+    </a>
+  </form>
+</div>
 <div class="container">
   <div class="d-flex justify-content-between mb-3">
     <h2>
@@ -8,33 +28,33 @@
       {{/if}} </h2>
   </div>
   <div class="">
-    <form action="{{#if event}}/events/{{event.id}}/edit{{else}}/events/new{{/if}}" method="post">
+    <form onsubmit="createOrUpdateEvent(); return false;">
       <div class="mb-3">
         <label for="name" class="form-label">Event name</label>
-        <input type="text" placeholder="name" id="name" class="form-control" name="name" required {{#if event}}
+        <input type="text" placeholder="Name" id="name" class="form-control" name="name" required {{#if event}}
           value="{{event.name}}" {{/if}} />
       </div>
       <div class="mb-3">
         <label for="startTime" class="form-label">Start time</label>
-        <input type="datetime-local" placeholder="startTime" id="startTime" class="form-control" name="startTime"
+        <input type="datetime-local" placeholder="Start time" id="startTime" class="form-control" name="startTime"
           required {{#if event}} value="{{formatDate event.startTime 'YYYY-MM-DDTHH:mm'}}" {{/if}} />
       </div>
       <div class="mb-3">
         <label for="location" class="form-label">Location</label>
-        <input type="text" placeholder="location" id="location" class="form-control" name="location" required {{#if event}}
-          value="{{event.location}}" {{/if}} />
+        <input type="text" placeholder="Location" id="location" class="form-control" name="location" required {{#if
+          event}} value="{{event.location}}" {{/if}} />
       </div>
       <div class="mb-3">
         <label for="duration" class="form-label">Duration</label>
-        <input type="text" placeholder="duration" id="duration" class="form-control" name="duration" required {{#if event}}
-          value="{{event.duration}}" {{/if}} />
+        <input type="text" placeholder="Duration" id="duration" class="form-control" name="duration" required {{#if
+          event}} value="{{event.duration}}" {{/if}} />
       </div>
       {{#ifeq user.role 'ADMIN'}}
       <div class="mb-3">
         <label for="organizerId" class="form-label">Organizer</label>
         <select name="organizerId" class="form-control">
           {{#each ../organizers}}
-            <option value="{{id}}">{{name}}</option>
+          <option value="{{id}}">{{name}}</option>
           {{/each}}
         </select>
       </div>
@@ -42,7 +62,8 @@
       <div class="mb-3">
         <label for="description" class="form-label">Description</label>
 
-        <textarea type="text" placeholder="description" id="description" class="form-control" required name="description">{{#if event}}{{event.description}}{{/if}}</textarea>
+        <textarea type="text" placeholder="Description" id="description" class="form-control" required
+          name="description">{{#if event}}{{event.description}}{{/if}}</textarea>
       </div>
 
 
@@ -59,3 +80,82 @@
 
   </div>
 </div>
+
+<script>
+  let eventId = '{{event.id}}';
+
+  imgInp.onchange = evt => {
+    const [file] = imgInp.files;
+    if (file) {
+      // file max size is 4M
+      if (file.size > 4194304) {
+        alert("File is too big!");
+        return;
+      }
+      bannerImage.src = URL.createObjectURL(file);
+      $('#eventBanner').css('background-image', `url(${URL.createObjectURL(file)})`);
+      $('#saveBanner').show();
+    }
+  }
+
+  $('#editBanner').on('click', () => {
+    $('#imgInp').trigger('click');
+  })
+
+  async function createOrUpdateEvent() {
+    const formData = {
+      name: $("#name").val(),
+      description: $("#description").val() || undefined,
+      startTime: $("#startTime").val() || undefined,
+      location: $("#location").val() || undefined,
+      duration: $("#duration").val() ? parseInt(document.getElementById("duration").value) : undefined,
+      organizerId: $("[name='organizerId']").find(":selected").val() || undefined,
+    };
+
+    let endpoint = '/events/new';
+    if (eventId) {
+      endpoint = `/events/${eventId}/edit`;
+    }
+
+    fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData)
+    }).then(response => response.json())
+      .then(response => {
+        uploadFile(response?.data?.id);
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        alert("Error creating/updating event!");
+      });
+  }
+
+  async function uploadFile(eventId) {
+    const fileInput = document.getElementById('imgInp');
+
+    if (fileInput.files.length === 0) {
+      window.location.href = `/events/${eventId}`;
+      return;
+    }
+
+    const file = fileInput.files[0];
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      fetch(`/events/${eventId}/upload-banner`, {
+        method: "POST",
+        body: formData
+      }).then(res => {
+        window.location.href = `/events/${eventId}`;
+      });
+    } catch (error) {
+      console.error("Error uploading file:", error);
+    }
+  }
+
+</script>

@@ -40,6 +40,9 @@ export class EventsService {
         const events = await this.eventsRepository.find({
             where: {
                 startTime: MoreThan(new Date())
+            },
+            order: {
+                createdAt: "DESC" // Sort by createdAt from newest to latest
             }
         });
 
@@ -57,7 +60,7 @@ export class EventsService {
             location: createEventDto.location,
             duration: createEventDto.duration,
             organizerId: createEventDto.organizerId,
-            cratedAt: new Date(),
+            createdAt: new Date(),
             createdBy: username
         });
 
