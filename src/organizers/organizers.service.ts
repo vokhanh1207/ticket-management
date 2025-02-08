@@ -9,7 +9,6 @@ export class OrganizersService {
     ) { }
 
     async createOrganizer(createOrganizerDto: CreateOrganizerDto): Promise<Organizer | HttpException> {
-        console.log('createOrganizerDto ', createOrganizerDto)
         if (!createOrganizerDto.name) {
             return new BadRequestException()
         } else {

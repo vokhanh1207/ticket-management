@@ -17,7 +17,6 @@ let OrganizersService = exports.OrganizersService = class OrganizersService {
         this.organizersRepository = organizersRepository;
     }
     async createOrganizer(createOrganizerDto) {
-        console.log('createOrganizerDto ', createOrganizerDto);
         if (!createOrganizerDto.name) {
             return new common_1.BadRequestException();
         }
