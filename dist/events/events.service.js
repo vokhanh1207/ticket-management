@@ -18,6 +18,8 @@ const tickets_service_1 = require("../tickets/tickets.service");
 const fs = require("fs");
 const QRCode = require("qrcode");
 const constants_1 = require("../utils.ts/constants");
+const event_exception_1 = require("./exceptions/event.exception");
+const event_status_enum_1 = require("./constants/event-status.enum");
 let EventsService = exports.EventsService = class EventsService {
     constructor(eventsRepository, ticketRepository, ticketsService) {
         this.eventsRepository = eventsRepository;
@@ -25,13 +27,14 @@ let EventsService = exports.EventsService = class EventsService {
         this.ticketsService = ticketsService;
     }
     async getEventById(id) {
-        try {
-            const found = await this.eventsRepository.findOneBy({ id });
-            return found;
+        const found = await this.eventsRepository.findOneBy({
+            id,
+            isDeleted: false
+        });
+        if (!found) {
+            throw new event_exception_1.EventNotFoundException(id);
         }
-        catch (error) {
-            return null;
-        }
+        return found;
     }
     async getTicketsByEventId(eventId) {
         const tickets = await this.ticketRepository.find({ where: { eventId } });
@@ -78,6 +81,20 @@ let EventsService = exports.EventsService = class EventsService {
             ...dbEvent,
             ...updateEventDto
         });
+    }
+    async deleteEvent(id) {
+        const event = await this.getEventById(id);
+        event.isDeleted = true;
+        event.deletedAt = new Date();
+        await this.eventsRepository.save(event);
+    }
+    async updateEventStatus(id, status) {
+        const event = await this.getEventById(id);
+        if (status === event_status_enum_1.EventStatus.PUBLISHED && !event.startTime) {
+            throw new event_exception_1.EventValidationException('Cannot publish event without start time');
+        }
+        event.status = status;
+        return this.eventsRepository.save(event);
     }
     async regisiterEvent(createTicketDto, origin) {
         const dbEvent = await this.getEventById(createTicketDto.eventId);

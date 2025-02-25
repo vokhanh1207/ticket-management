@@ -27,7 +27,8 @@ export class AuthController {
         const user = await this.authService.signIn(body);
         if (user) {
             session.userId = user.id;
-            return res.redirect('../events');
+            const returnUrl = req.body.returnUrl || '/events';
+            return res.redirect(returnUrl);
         } else {
             return res.render('login', {message: 'Username or password is incorrect', user: req.user});
         }

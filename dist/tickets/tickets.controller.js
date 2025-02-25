@@ -33,7 +33,7 @@ let TicketsController = exports.TicketsController = class TicketsController {
         }
         let manageable = false;
         const user = req.user;
-        if (user?.role === user_role_constant_1.UserRole.Admin || user?.organizerId === event.organizerId) {
+        if (user?.role === user_role_constant_1.UserRole.ADMIN || user?.organizerId === event.organizerId) {
             manageable = true;
         }
         return res.render('ticket-details', { event, ticket, user: req.user, manageable });
@@ -45,7 +45,7 @@ let TicketsController = exports.TicketsController = class TicketsController {
         if (ticket) {
             event = await this.eventsService.getEventById(ticket.eventId);
         }
-        if (!user && user?.role !== user_role_constant_1.UserRole.Admin && user?.organizerId !== event?.organizerId) {
+        if (!user && user?.role !== user_role_constant_1.UserRole.ADMIN && user?.organizerId !== event?.organizerId) {
             return res.redirect('.');
         }
         const statuses = Object.values(constants_1.TicketStatus);
@@ -58,7 +58,7 @@ let TicketsController = exports.TicketsController = class TicketsController {
         if (ticket) {
             event = await this.eventsService.getEventById(ticket.eventId);
         }
-        if (!user && user?.role !== user_role_constant_1.UserRole.Admin && user?.organizerId !== event?.organizerId) {
+        if (!user && user?.role !== user_role_constant_1.UserRole.ADMIN && user?.organizerId !== event?.organizerId) {
             return res.redirect('.');
         }
         ticket = await this.ticketsService.updateTicket(id, createTicketDto);
@@ -76,7 +76,7 @@ let TicketsController = exports.TicketsController = class TicketsController {
             value: '',
             code: ''
         };
-        if (user.role !== user_role_constant_1.UserRole.Admin && user.organizerId !== event.organizerId) {
+        if (user.role !== user_role_constant_1.UserRole.ADMIN && user.organizerId !== event.organizerId) {
             message.value = `Your organization does not organize this event.`;
             message.code = 'NOT-VALID';
             return res.render('ticket-scan', {

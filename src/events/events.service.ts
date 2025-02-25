@@ -11,6 +11,8 @@ import * as fs from 'fs'
 import * as QRCode from 'qrcode';
 import { EVENT_IMAGES_DIR } from 'src/utils.ts/constants';
 import { UpdateEventDto } from './dto/update-event.dto';
+import { EventNotFoundException, EventValidationException } from './exceptions/event.exception';
+import { EventStatus } from './constants/event-status.enum';
 
 @Injectable()
 export class EventsService {
@@ -20,14 +22,21 @@ export class EventsService {
         private ticketsService: TicketsService
     ) { }
 
+    /**
+     * Get event by ID
+     * @throws EventNotFoundException if event not found
+     */
     async getEventById(id: string): Promise<Event> {
-        try {
-
-            const found = await this.eventsRepository.findOneBy({ id })
-            return found;
-        } catch (error) {
-            return null;
+        const found = await this.eventsRepository.findOneBy({ 
+            id,
+            isDeleted: false 
+        });
+        
+        if (!found) {
+            throw new EventNotFoundException(id);
         }
+        
+        return found;
     }
 
     async getTicketsByEventId(eventId: string): Promise<Ticket[]> {
@@ -89,6 +98,32 @@ export class EventsService {
             ...dbEvent,
             ...updateEventDto
         });
+    }
+
+    /**
+     * Soft delete an event
+     * @throws EventNotFoundException if event not found
+     */
+    async deleteEvent(id: string): Promise<void> {
+        const event = await this.getEventById(id);
+        event.isDeleted = true;
+        event.deletedAt = new Date();
+        await this.eventsRepository.save(event);
+    }
+
+    /**
+     * Update event status
+     * @throws EventValidationException for invalid status transitions
+     */
+    async updateEventStatus(id: string, status: EventStatus): Promise<Event> {
+        const event = await this.getEventById(id);
+        
+        if (status === EventStatus.PUBLISHED && !event.startTime) {
+            throw new EventValidationException('Cannot publish event without start time');
+        }
+        
+        event.status = status;
+        return this.eventsRepository.save(event);
     }
 
     async regisiterEvent(createTicketDto: CreateTicketDto, origin: string): Promise<Ticket> {

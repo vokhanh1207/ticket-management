@@ -1,0 +1,64 @@
+<div class="container">
+    <div class="d-flex justify-content-between mb-3">
+        <h2>Users</h2>
+        <a href="/add-user" class="btn btn-primary"><i class="fa fa-plus" aria-hidden="true"></i></a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th class="w-25">Username</th>
+                    <th class="w-25">Name</th>
+                    <th class="w-15">Role</th>
+                    {{#if canManageAdmins}}
+                    <th class="w-20">Organization</th>
+                    {{/if}}
+                    <th class="text-end w-15">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each users}}
+                <tr>
+                    <td>{{this.username}}</td>
+                    <td>{{this.firstName}} {{this.lastName}}</td>
+                    <td>{{this.role}}</td>
+                    {{#if ../canManageAdmins}}
+                    <td>{{this.organizerId}}</td>
+                    {{/if}}
+                    <td class="">
+                        <div class="text-end d-flex justify-content-end gap-2">
+                            <a href="/users/{{this.id}}/edit" class="btn btn-sm btn-primary">
+                                <i class="fa fa-pencil"></i>
+                            </a>
+                            {{#if (or ../canManageAdmins (and (ne this.role 'ADMIN') (eq this.organizerId
+                            ../user.organizerId)))}}
+                            <button class="btn btn-sm btn-danger" onclick="deleteUser('{{this.id}}')">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </div>
+
+                        {{/if}}
+                    </td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function deleteUser(userId) {
+        if (confirm('Are you sure you want to delete this user?')) {
+            fetch(`/users/${userId}`, {
+                method: 'DELETE'
+            }).then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Failed to delete user');
+                }
+            });
+        }
+    }
+</script>

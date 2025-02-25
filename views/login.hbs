@@ -11,6 +11,12 @@
             {{message}}
           </div>
           {{/if}}
+          {{#if returnUrl}}
+          <div class="alert alert-info" role="alert">
+            Please log in to continue
+          </div>
+          <input type="hidden" name="returnUrl" value="{{returnUrl}}">
+          {{/if}}
           <!-- SDT input -->
           <div class="form-outline mb-4">
             <label class="form-label" for="username">Username </label>

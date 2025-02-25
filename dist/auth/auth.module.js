@@ -26,8 +26,8 @@ exports.AuthModule = AuthModule = __decorate([
         providers: [{
                 provide: 'AUTH_SERVICE',
                 useClass: auth_service_1.AuthService
-            }, user_repository_1.UserRepository, local_strategy_1.LocalStrategy, SessionSerializer_1.SessionSerializer],
-        exports: [local_strategy_1.LocalStrategy]
+            }, auth_service_1.AuthService, user_repository_1.UserRepository, local_strategy_1.LocalStrategy, SessionSerializer_1.SessionSerializer],
+        exports: [auth_service_1.AuthService, local_strategy_1.LocalStrategy]
     })
 ], AuthModule);
 //# sourceMappingURL=auth.module.js.map

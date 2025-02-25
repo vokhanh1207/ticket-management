@@ -9,5 +9,5 @@ export declare class OrganizersController {
     newOrganizer(res: Response, req: Request, createOrganizerDto: CreateOrganizerDto): Promise<void>;
     getOrganizer(res: Response, req: Request): Promise<void>;
     updateMyOrganization(res: Response, req: Request, createOrganizerDto: CreateOrganizerDto): Promise<void>;
-    getEvent(res: Response, req: Request): Promise<void>;
+    showEditOrganizer(res: Response, req: Request): Promise<void>;
 }

@@ -1,7 +1,9 @@
-import { Body, Controller, Get, Post, Req, Res, Headers, UseInterceptors, UploadedFile, Param, HttpStatus, HttpCode } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, Res, Headers, UseInterceptors, 
+         UploadedFile, Param, HttpStatus, HttpCode, UseGuards, BadRequestException,
+         ParseFilePipe, FileValidator } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { CreateEventDto } from './dto/create-event.dto';
-import { Response, Request } from 'express';
+import { Response, Request as ExpressRequest } from 'express';
 import { CreateTicketDto } from 'src/tickets/dto/create-ticket.dto';
 import * as moment from 'moment'
 import { OrganizersService } from 'src/organizers/organizers.service';
@@ -13,18 +15,26 @@ import { diskStorage } from 'multer';
 import { extname } from 'path';
 import * as fs from 'fs';
 import { Organizer } from 'src/organizers/dto/organizer.entity';
+import { EventEditGuard } from './guards/event-auth.guard';
+import { EventFileService } from './services/event-file.service';
+import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
+
+// Add interface for typed request
+interface RequestWithUser extends ExpressRequest {
+    user?: User;
+}
 
 @Controller('events')
 export class EventsController {
-
     constructor(
         private eventsService: EventsService,
         private organizersService: OrganizersService,
         private mailSchedulesService: MailSchedulesService,
-    ) { }
+        private eventFileService: EventFileService,
+    ) {}
 
     @Get()
-    async showEvents(@Res() res: Response, @Req() req: Request) {
+    async showEvents(@Res() res: Response, @Req() req: RequestWithUser) {
         const events = await this.eventsService.getEvents();
         return res.render('events', { events, user: req.user });
     }
@@ -32,7 +42,7 @@ export class EventsController {
     @Get('new')
     async showNewEvents(
         @Res() res: Response,
-        @Req() req: Request) {
+        @Req() req: RequestWithUser) {
         if (!req.user) {
             return res.redirect('.');
         }
@@ -44,14 +54,14 @@ export class EventsController {
     async createNewEvents(
         @Body() createEventDto: CreateEventDto,
         @Res() res: Response,
-        @Req() req: Request,
+        @Req() req: RequestWithUser,
         @Headers() headers
     ) {
         if (!req.user) {
             return res.redirect('.');
         }
-        if ((req.user as User).role !== UserRole.Admin) {
-            createEventDto.organizerId = (req.user as User).organizerId;
+        if (req.user.role !== UserRole.ADMIN) {
+            createEventDto.organizerId = req.user.organizerId;
         }
         
         const event = await this.eventsService.createEvent(createEventDto, (req.user as any).username, headers.origin);
@@ -62,7 +72,7 @@ export class EventsController {
     }
 
     @Get(':eventId')
-    async getEvent(@Res() res: Response, @Req() req: Request) {
+    async getEvent(@Res() res: Response, @Req() req: RequestWithUser) {
         const event = await this.eventsService.getEventById(req.params?.eventId);
         if (!event) {
             return res.render('not-found', { event, user: req.user });
@@ -70,7 +80,8 @@ export class EventsController {
         const organizer = await this.organizersService.getOrganizerId(event.organizerId);
         let manageable = false;
         const user = req.user as User;
-        if (user?.role === UserRole.Admin || user?.organizerId === event.organizerId) {
+        console.log(user);
+        if (user?.role === UserRole.ADMIN || user?.organizerId === event.organizerId) {
             manageable = true;
         }
 
@@ -80,7 +91,7 @@ export class EventsController {
     @Post(':eventId')
     async registerEvent(
         @Body() createTicketDto: CreateTicketDto,
-        @Req() req: Request,
+        @Req() req: RequestWithUser,
         @Res() res: Response,
         @Headers() headers) {
         createTicketDto.eventId = req.params?.eventId;
@@ -97,27 +108,19 @@ export class EventsController {
         }
     }
 
+    @UseGuards(EventEditGuard)
     @Get(':eventId/edit')
-    async showEditEvent(@Res() res: Response, @Req() req: Request) {
-        const user = req.user as User;
-        if (!user) {
-            return res.redirect('.');
-        }
+    async showEditEvent(@Res() res: Response, @Req() req: RequestWithUser) {
         const event = await this.eventsService.getEventById(req.params?.eventId);
-        if (user.role !== UserRole.Admin && user.organizerId !== event.organizerId) {
-            return res.redirect('.');
-        }
-
-        let organizers = [];
-        if (user?.role === UserRole.Admin) {
-            organizers = await this.organizersService.getOrganizers() as Organizer[];
-        }
+        const organizers = (req.user?.role === UserRole.ADMIN) ? 
+            await this.organizersService.getOrganizers() : 
+            [];
 
         return res.render('new-event', { event, user: req.user, organizers });
     }
 
     @Post(':eventId/edit')
-    async editEvent(@Res() res: Response, @Req() req: Request, @Body() createEventDto: CreateEventDto) {
+    async editEvent(@Res() res: Response, @Req() req: RequestWithUser, @Body() createEventDto: CreateEventDto) {
         if (!req.user) {
             return res.redirect('.');
         }
@@ -131,14 +134,14 @@ export class EventsController {
     }
 
     @Get(':eventId/tickets')
-    async getEventTickets(@Res() res: Response, @Req() req: Request) {
+    async getEventTickets(@Res() res: Response, @Req() req: RequestWithUser) {
         const user = req.user as User;
         if (!req.user) {
             return res.redirect('../' + req.params?.eventId)
         }
 
         const event = await this.eventsService.getEventById(req.params?.eventId);
-        if (user.role !== UserRole.Admin && user.organizerId !== event.organizerId) {
+        if (user.role !== UserRole.ADMIN && user.organizerId !== event.organizerId) {
             return res.redirect('.');
         }
 
@@ -157,41 +160,39 @@ export class EventsController {
 
 
     @Get(':eventId/remind')
-    async remindTickets(eventId: string, @Req() req: Request): Promise<boolean> {
+    async remindTickets(eventId: string, @Req() req: RequestWithUser): Promise<boolean> {
         return await this.eventsService.sendRemindEmails(eventId, req.get('host'));
     }
 
     @Post(':eventId/upload-banner')
-    @UseInterceptors(
-        FileInterceptor('file', {
-            storage: diskStorage({
-                destination: (req, file, cb) => {
-                    const eventId = req.params.eventId;
-                    const uploadPath = `./public/images/events/${eventId}`;
-
-                    // Ensure the directory exists
-                    fs.mkdirSync(uploadPath, { recursive: true });
-
-                    cb(null, uploadPath);
-                },
-                filename: (req, file, cb) => {
-                    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-                    cb(null, uniqueSuffix + extname(file.originalname));
-                },
-            }),
-        }),
-    )
-    async uploadFile(@Param('eventId') eventId: string, @UploadedFile() file: Express.Multer.File) {
+    @UseGuards(EventEditGuard)
+    @UseInterceptors(FileInterceptor('file', {
+        storage: diskStorage({
+            destination: (req: RequestWithUser & { params: { eventId: string } }, file, cb) => {
+                if (!req.params.eventId) {
+                    throw new BadRequestException('Event ID is required');
+                }
+                const path = './public/images/events/' + req.params.eventId;
+                fs.mkdirSync(path, { recursive: true });
+                cb(null, path);
+            },
+            filename: (req, file, cb) => {
+                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+                cb(null, uniqueSuffix + extname(file.originalname));
+            }
+        })
+    }))
+    async uploadBanner(
+        @Param('eventId') eventId: string,
+        @UploadedFile(new ParseFilePipe({ fileIsRequired: true })) file: Express.Multer.File
+    ) {
         if (!file) {
             return { message: 'Banner upload failed' };
         }
 
-        // Construct the public image URL (assuming static files are served)
-        const imageUrl = `/images/events/${eventId}/${file.filename}`;
-
-        // Save image URL to the database
+        const imageUrl = this.eventFileService.getPublicUrl(eventId, file.filename);
         const event = await this.eventsService.updateBanner(eventId, imageUrl);
 
-        return { message: 'Banner uploaded successfully', event };
+        return { message: 'Banner upload successful', event };
     }
 }

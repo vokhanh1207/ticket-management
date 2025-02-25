@@ -20,7 +20,14 @@ const organizers_service_1 = require("../organizers/organizers.service");
 const organizers_repository_1 = require("../organizers/organizers.repository");
 const mail_schedules_service_1 = require("../mail-schedules/mail-schedules.service");
 const mail_schedules_repository_1 = require("../mail-schedules/mail-schedules.repository");
+const event_file_service_1 = require("./services/event-file.service");
+const auth_redirect_middleware_1 = require("../auth/middleware/auth-redirect.middleware");
 let EventsModule = exports.EventsModule = class EventsModule {
+    configure(consumer) {
+        consumer
+            .apply(auth_redirect_middleware_1.AuthRedirectMiddleware)
+            .forRoutes('events/:eventId/edit', 'events/:eventId/upload-banner');
+    }
 };
 exports.EventsModule = EventsModule = __decorate([
     (0, common_1.Module)({
@@ -33,6 +40,7 @@ exports.EventsModule = EventsModule = __decorate([
         providers: [events_service_1.EventsService, events_repository_1.EventsRepository, tickets_repository_1.TicketsRepository, mail_service_1.MailService, organizers_service_1.OrganizersService,
             organizers_repository_1.OrganizersRepository,
             mail_schedules_service_1.MailSchedulesService,
+            event_file_service_1.EventFileService,
             mail_schedules_repository_1.MailSchedulesRepository
         ],
         exports: [events_service_1.EventsService]

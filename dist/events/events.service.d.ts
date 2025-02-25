@@ -6,6 +6,7 @@ import { Ticket } from 'src/tickets/dto/ticket.entity';
 import { CreateTicketDto } from 'src/tickets/dto/create-ticket.dto';
 import { TicketsService } from 'src/tickets/tickets.service';
 import { UpdateEventDto } from './dto/update-event.dto';
+import { EventStatus } from './constants/event-status.enum';
 export declare class EventsService {
     private eventsRepository;
     private ticketRepository;
@@ -16,6 +17,8 @@ export declare class EventsService {
     getEvents(): Promise<Event[]>;
     createEvent(createEventDto: CreateEventDto, username: string, origin: string): Promise<Event>;
     updateEvent(eventId: string, updateEventDto: UpdateEventDto): Promise<Event>;
+    deleteEvent(id: string): Promise<void>;
+    updateEventStatus(id: string, status: EventStatus): Promise<Event>;
     regisiterEvent(createTicketDto: CreateTicketDto, origin: string): Promise<Ticket>;
     sendRemindEmails(eventId: string, origin: string): Promise<boolean>;
     updateBanner(eventId: string, bannerImage: string): Promise<Event>;

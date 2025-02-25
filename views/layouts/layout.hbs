@@ -30,27 +30,37 @@
 
         <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
           <li><a href="/events" class="nav-link px-2 text-white">Events</a></li>
+          {{#if user}}
+            {{#if (eq user.role 'ADMIN')}}
+              <li><a href="/organizers" class="nav-link px-2 text-white">Organizations</a></li>
+            {{/if}}
+            {{#if (or (eq user.role 'ADMIN') (eq user.role 'ORGANIZER_ADMIN'))}}
+              <li><a href="/users" class="nav-link px-2 text-white">Users</a></li>
+            {{/if}}
+          {{/if}}
         </ul>
+
         {{#if user.username}}
         <div class="dropdown text-end">
           
-          <a href="#" class="d-block text-white text-decoration-none dropdown-toggle" id="dropdownUser1"
+          <a href="#" class="d-block text-white text-decoration-none dropdown-toggle d-flex align-items-center" id="dropdownUser1"
             data-bs-toggle="dropdown" aria-expanded="false">
-            <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">
+            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" 
+                 style="width: 32px; height: 32px; font-weight: bold;">
+                {{#if user.firstName}}
+                    {{slice user.firstName 0 1}}
+                {{else}}
+                    {{slice user.username 0 1}}
+                {{/if}}
+            </div>
           </a>
           <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1" style="">
             <li><a class="dropdown-item" href="/my-profile">My profile</a></li>
-            {{#ifeq user.role 'ADMIN'}}
-              <li>
-                <hr class="dropdown-divider">
-              </li>
-              <li><a class="dropdown-item" href="/organizers">Organizers</a></li>
-            {{/ifeq}}
             {{#ifeq user.role 'ORGANIZER_ADMIN'}}
               <li>
                 <hr class="dropdown-divider">
               </li>
-              <li><a class="dropdown-item" href="/organizers/{{../user.organizerId}}/edit">My organization</a></li>
+              <li><a class="dropdown-item" href="/organizers/{{user.organizerId}}/edit">My organization</a></li>
             {{/ifeq}}
             <li>
               <hr class="dropdown-divider">
@@ -69,6 +79,7 @@
       </div>
     </div>
   </header>
+
   <div class="content py-5">
     {{{body}}}
   </div>

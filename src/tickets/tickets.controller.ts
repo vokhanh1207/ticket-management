@@ -27,7 +27,7 @@ export class TicketsController {
 
         let manageable = false;
         const user = req.user as User;
-        if (user?.role === UserRole.Admin || user?.organizerId === event.organizerId) {
+        if (user?.role === UserRole.ADMIN || user?.organizerId === event.organizerId) {
             manageable = true;
         }
 
@@ -45,7 +45,7 @@ export class TicketsController {
             event = await this.eventsService.getEventById(ticket.eventId)
         }
   
-        if (!user && user?.role !== UserRole.Admin && user?.organizerId !== event?.organizerId) {
+        if (!user && user?.role !== UserRole.ADMIN && user?.organizerId !== event?.organizerId) {
             return res.redirect('.');
         }
         const statuses = Object.values(TicketStatus)
@@ -64,7 +64,7 @@ export class TicketsController {
             event = await this.eventsService.getEventById(ticket.eventId)
         }
   
-        if (!user && user?.role !== UserRole.Admin && user?.organizerId !== event?.organizerId) {
+        if (!user && user?.role !== UserRole.ADMIN && user?.organizerId !== event?.organizerId) {
             return res.redirect('.');
         }
         ticket = await this.ticketsService.updateTicket(id, createTicketDto);
@@ -90,7 +90,7 @@ export class TicketsController {
             code: ''
         };
 
-        if(user.role !== UserRole.Admin && user.organizerId !== event.organizerId) {
+        if(user.role !== UserRole.ADMIN && user.organizerId !== event.organizerId) {
             message.value = `Your organization does not organize this event.`;
             message.code = 'NOT-VALID';
             return res.render('ticket-scan', { 

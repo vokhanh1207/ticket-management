@@ -24,6 +24,7 @@ const organizers_service_1 = require("./organizers/organizers.service");
 const organizers_repository_1 = require("./organizers/organizers.repository");
 const mail_schedules_module_1 = require("./mail-schedules/mail-schedules.module");
 const schedule_1 = require("@nestjs/schedule");
+const users_module_1 = require("./users/users.module");
 let AppModule = exports.AppModule = class AppModule {
 };
 exports.AppModule = AppModule = __decorate([
@@ -71,6 +72,7 @@ exports.AppModule = AppModule = __decorate([
                 }),
                 inject: [config_1.ConfigService],
             }),
+            users_module_1.UsersModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService, auth_service_1.AuthService, user_repository_1.UserRepository, organizers_service_1.OrganizersService, organizers_repository_1.OrganizersRepository]

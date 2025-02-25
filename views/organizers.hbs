@@ -1,14 +1,11 @@
 <div class="container">
   <div class="d-flex justify-content-between mb-3">
     <h2>Organizers</h2>
-    {{!-- <button class="btn btn-primary btn-block">
-      <i class="fa fa-paper-plane-o" aria-hidden="true"></i>
-    </button> --}}
-    {{#ifeq user.role 'ADMIN'}}
+    {{#if (eq user.role 'ADMIN')}}
       <a href="/organizers/new" type="button" class="btn btn-primary btn-block mb-4">
         <i class="fa fa-plus" aria-hidden="true"></i>
       </a>
-    {{/ifeq}}
+    {{/if}}
   </div>
   <div class="overflow-x-scroll">
     <table class="table table-striped" style="min-width: 600px;">
@@ -30,8 +27,6 @@
           </td>
         </tr>
         {{/each}}
-
-
       </tbody>
     </table>
   </div>

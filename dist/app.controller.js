@@ -62,38 +62,50 @@ let AppController = exports.AppController = class AppController {
         return res.render('my-profile', { user: updatedUser });
     }
     async showAddUser(res, req, userDto) {
-        if (!req.user && req.user?.role !== user_role_constant_1.UserRole.Admin && req.user?.role !== user_role_constant_1.UserRole.OrganizerAdmin) {
+        if (!req.user && req.user?.role !== user_role_constant_1.UserRole.ADMIN && req.user?.role !== user_role_constant_1.UserRole.ORGANIZER_ADMIN) {
             return res.redirect('/events');
         }
         const organizers = await this.organizerService.getOrganizers();
         let roles = Object.values(user_role_constant_1.UserRole);
-        if (req.user.role === user_role_constant_1.UserRole.OrganizerAdmin) {
-            roles = roles.filter(item => item !== user_role_constant_1.UserRole.Admin);
+        if (req.user.role === user_role_constant_1.UserRole.ORGANIZER_ADMIN) {
+            roles = roles.filter(item => item !== user_role_constant_1.UserRole.ADMIN);
         }
-        console.log(roles);
-        return res.render('add-user', {
+        return res.render('user-form', {
             user: req.user,
             roles,
             organizers
         });
     }
     async addUser(res, req, userDto) {
-        if (!req.user && req.user.role !== user_role_constant_1.UserRole.Admin && req.user.role !== user_role_constant_1.UserRole.OrganizerAdmin) {
+        if (!req.user) {
             return res.redirect('/events');
         }
-        let message = '';
-        if (req.user.role === user_role_constant_1.UserRole.OrganizerAdmin && userDto.role === user_role_constant_1.UserRole.Admin) {
-            message = 'You are not allowed to assign the admin role to a user.';
-            return res.render('add-user', { user: req.user, message });
-        }
+        const currentUser = req.user;
         try {
-            const user = await this.authService.signUp(userDto, req.user);
-            message = 'User created successfully';
+            if (currentUser.role === user_role_constant_1.UserRole.ORGANIZER_ADMIN) {
+                if (userDto.role === user_role_constant_1.UserRole.ADMIN) {
+                    throw new Error('You are not allowed to assign the admin role to a user.');
+                }
+                userDto.organizerId = currentUser.organizerId;
+            }
+            const user = await this.authService.signUp(userDto, currentUser);
+            return res.render('user-form', {
+                user: currentUser,
+                message: 'User created successfully',
+                roles: Object.values(user_role_constant_1.UserRole).filter(role => currentUser.role === user_role_constant_1.UserRole.ADMIN || role !== user_role_constant_1.UserRole.ADMIN),
+                organizers: currentUser.role === user_role_constant_1.UserRole.ADMIN ?
+                    await this.organizerService.getOrganizers() : []
+            });
         }
         catch (error) {
-            message = error.message;
+            return res.render('user-form', {
+                user: currentUser,
+                message: error.message,
+                roles: Object.values(user_role_constant_1.UserRole).filter(role => currentUser.role === user_role_constant_1.UserRole.ADMIN || role !== user_role_constant_1.UserRole.ADMIN),
+                organizers: currentUser.role === user_role_constant_1.UserRole.ADMIN ?
+                    await this.organizerService.getOrganizers() : []
+            });
         }
-        return res.render('add-user', { user: req.user, message });
     }
 };
 __decorate([

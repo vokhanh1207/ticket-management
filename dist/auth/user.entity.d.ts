@@ -6,5 +6,5 @@ export declare class User {
     firstName: string;
     lastName: string;
     role: UserRole;
-    organizerId: string;
+    organizerId?: string;
 }

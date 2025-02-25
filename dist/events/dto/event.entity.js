@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Event = void 0;
 const typeorm_1 = require("typeorm");
+const event_status_enum_1 = require("../constants/event-status.enum");
 let Event = exports.Event = class Event {
 };
 __decorate([
@@ -46,9 +47,21 @@ __decorate([
     __metadata("design:type", String)
 ], Event.prototype, "location", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
+    (0, typeorm_1.Column)({
+        type: 'enum',
+        enum: event_status_enum_1.EventStatus,
+        default: event_status_enum_1.EventStatus.PUBLISHED
+    }),
     __metadata("design:type", String)
 ], Event.prototype, "status", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true, type: 'datetime' }),
+    __metadata("design:type", Date)
+], Event.prototype, "deletedAt", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: false }),
+    __metadata("design:type", Boolean)
+], Event.prototype, "isDeleted", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)

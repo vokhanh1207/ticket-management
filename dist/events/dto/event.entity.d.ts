@@ -1,3 +1,4 @@
+import { EventStatus } from "../constants/event-status.enum";
 export declare class Event {
     id: string;
     name: string;
@@ -7,7 +8,9 @@ export declare class Event {
     startTime?: Date;
     duration?: number;
     location?: string;
-    status?: string;
+    status: EventStatus;
+    deletedAt?: Date;
+    isDeleted: boolean;
     qr?: string;
     organizerId?: string;
     bannerImage?: string;

@@ -1,4 +1,4 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { forwardRef, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { EventsController } from './events.controller';
 import { EventsService } from './events.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -11,6 +11,8 @@ import { OrganizersService } from 'src/organizers/organizers.service';
 import { OrganizersRepository } from 'src/organizers/organizers.repository';
 import { MailSchedulesService } from 'src/mail-schedules/mail-schedules.service';
 import { MailSchedulesRepository } from 'src/mail-schedules/mail-schedules.repository';
+import { EventFileService } from './services/event-file.service';
+import { AuthRedirectMiddleware } from '../auth/middleware/auth-redirect.middleware';
 
 @Module({
   imports: [
@@ -22,9 +24,15 @@ import { MailSchedulesRepository } from 'src/mail-schedules/mail-schedules.repos
   providers: [EventsService, EventsRepository, TicketsRepository, MailService, OrganizersService,
     OrganizersRepository,
     MailSchedulesService,
+    EventFileService,
     MailSchedulesRepository
   ],
   exports: [EventsService]
 })
-export class EventsModule {}
- 
+export class EventsModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(AuthRedirectMiddleware)
+      .forRoutes('events/:eventId/edit', 'events/:eventId/upload-banner');
+  }
+}

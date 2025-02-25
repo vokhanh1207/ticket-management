@@ -35,7 +35,11 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "lastName", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({
+        type: 'enum',
+        enum: user_role_constant_1.UserRole,
+        default: user_role_constant_1.UserRole.SCANNER
+    }),
     __metadata("design:type", String)
 ], User.prototype, "role", void 0);
 __decorate([

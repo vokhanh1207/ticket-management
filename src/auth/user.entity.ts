@@ -18,9 +18,13 @@ export class User {
     @Column({ nullable: true })
     lastName: string;
 
-    @Column() // ADMIN, ORGANIZER_ADMIN, SCANNER
+    @Column({
+        type: 'enum',
+        enum: UserRole,
+        default: UserRole.SCANNER
+    })
     role: UserRole;
 
     @Column({ nullable: true })
-    organizerId: string;
+    organizerId?: string;
 }

@@ -56,15 +56,15 @@ let UserRepository = exports.UserRepository = class UserRepository extends typeo
     }
     validateAssignedRole(assignedRole, currentUser) {
         switch (assignedRole) {
-            case user_role_constant_1.UserRole.Admin:
-                if (currentUser.role !== user_role_constant_1.UserRole.Admin) {
+            case user_role_constant_1.UserRole.ADMIN:
+                if (currentUser.role !== user_role_constant_1.UserRole.ADMIN) {
                     return false;
                 }
                 else {
                     return true;
                 }
-            case user_role_constant_1.UserRole.OrganizerAdmin:
-                if (currentUser.role !== user_role_constant_1.UserRole.Admin && currentUser.role !== user_role_constant_1.UserRole.OrganizerAdmin) {
+            case user_role_constant_1.UserRole.ORGANIZER_ADMIN:
+                if (currentUser.role !== user_role_constant_1.UserRole.ADMIN && currentUser.role !== user_role_constant_1.UserRole.ORGANIZER_ADMIN) {
                     return false;
                 }
                 else {

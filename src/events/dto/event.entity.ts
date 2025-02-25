@@ -1,5 +1,6 @@
 import { Optional } from "@nestjs/common";
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { EventStatus } from "../constants/event-status.enum";
 
 @Entity()
 export class Event {
@@ -27,8 +28,18 @@ export class Event {
     @Column({ nullable: true })
     location?: string;
 
-    @Column({ nullable: true })
-    status?: string;
+    @Column({
+        type: 'enum',
+        enum: EventStatus,
+        default: EventStatus.PUBLISHED
+    })
+    status: EventStatus;
+
+    @Column({ nullable: true, type: 'datetime' })
+    deletedAt?: Date;
+
+    @Column({ default: false })
+    isDeleted: boolean;
 
     @Column({nullable: true})
     qr?: string;

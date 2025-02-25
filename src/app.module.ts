@@ -16,6 +16,7 @@ import { OrganizersRepository } from './organizers/organizers.repository';
 import { MailSchedulesModule } from './mail-schedules/mail-schedules.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { MulterModule } from '@nestjs/platform-express';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -100,6 +101,7 @@ import { MulterModule } from '@nestjs/platform-express';
       }),
       inject: [ConfigService],
     }),
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService, AuthService, UserRepository, OrganizersService, OrganizersRepository]

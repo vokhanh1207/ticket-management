@@ -25,11 +25,14 @@ const platform_express_1 = require("@nestjs/platform-express");
 const multer_1 = require("multer");
 const path_1 = require("path");
 const fs = require("fs");
+const event_auth_guard_1 = require("./guards/event-auth.guard");
+const event_file_service_1 = require("./services/event-file.service");
 let EventsController = exports.EventsController = class EventsController {
-    constructor(eventsService, organizersService, mailSchedulesService) {
+    constructor(eventsService, organizersService, mailSchedulesService, eventFileService) {
         this.eventsService = eventsService;
         this.organizersService = organizersService;
         this.mailSchedulesService = mailSchedulesService;
+        this.eventFileService = eventFileService;
     }
     async showEvents(res, req) {
         const events = await this.eventsService.getEvents();
@@ -46,7 +49,7 @@ let EventsController = exports.EventsController = class EventsController {
         if (!req.user) {
             return res.redirect('.');
         }
-        if (req.user.role !== user_role_constant_1.UserRole.Admin) {
+        if (req.user.role !== user_role_constant_1.UserRole.ADMIN) {
             createEventDto.organizerId = req.user.organizerId;
         }
         const event = await this.eventsService.createEvent(createEventDto, req.user.username, headers.origin);
@@ -63,7 +66,8 @@ let EventsController = exports.EventsController = class EventsController {
         const organizer = await this.organizersService.getOrganizerId(event.organizerId);
         let manageable = false;
         const user = req.user;
-        if (user?.role === user_role_constant_1.UserRole.Admin || user?.organizerId === event.organizerId) {
+        console.log(user);
+        if (user?.role === user_role_constant_1.UserRole.ADMIN || user?.organizerId === event.organizerId) {
             manageable = true;
         }
         return res.render('event-details', { event, user: req.user, organizer, manageable });
@@ -84,18 +88,10 @@ let EventsController = exports.EventsController = class EventsController {
         }
     }
     async showEditEvent(res, req) {
-        const user = req.user;
-        if (!user) {
-            return res.redirect('.');
-        }
         const event = await this.eventsService.getEventById(req.params?.eventId);
-        if (user.role !== user_role_constant_1.UserRole.Admin && user.organizerId !== event.organizerId) {
-            return res.redirect('.');
-        }
-        let organizers = [];
-        if (user?.role === user_role_constant_1.UserRole.Admin) {
-            organizers = await this.organizersService.getOrganizers();
-        }
+        const organizers = (req.user?.role === user_role_constant_1.UserRole.ADMIN) ?
+            await this.organizersService.getOrganizers() :
+            [];
         return res.render('new-event', { event, user: req.user, organizers });
     }
     async editEvent(res, req, createEventDto) {
@@ -115,7 +111,7 @@ let EventsController = exports.EventsController = class EventsController {
             return res.redirect('../' + req.params?.eventId);
         }
         const event = await this.eventsService.getEventById(req.params?.eventId);
-        if (user.role !== user_role_constant_1.UserRole.Admin && user.organizerId !== event.organizerId) {
+        if (user.role !== user_role_constant_1.UserRole.ADMIN && user.organizerId !== event.organizerId) {
             return res.redirect('.');
         }
         const tickets = await this.eventsService.getTicketsByEventId(req.params?.eventId);
@@ -133,13 +129,13 @@ let EventsController = exports.EventsController = class EventsController {
     async remindTickets(eventId, req) {
         return await this.eventsService.sendRemindEmails(eventId, req.get('host'));
     }
-    async uploadFile(eventId, file) {
+    async uploadBanner(eventId, file) {
         if (!file) {
             return { message: 'Banner upload failed' };
         }
-        const imageUrl = `/images/events/${eventId}/${file.filename}`;
+        const imageUrl = this.eventFileService.getPublicUrl(eventId, file.filename);
         const event = await this.eventsService.updateBanner(eventId, imageUrl);
-        return { message: 'Banner uploaded successfully', event };
+        return { message: 'Banner upload successful', event };
     }
 };
 __decorate([
@@ -187,6 +183,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], EventsController.prototype, "registerEvent", null);
 __decorate([
+    (0, common_1.UseGuards)(event_auth_guard_1.EventEditGuard),
     (0, common_1.Get)(':eventId/edit'),
     __param(0, (0, common_1.Res)()),
     __param(1, (0, common_1.Req)()),
@@ -220,30 +217,34 @@ __decorate([
 ], EventsController.prototype, "remindTickets", null);
 __decorate([
     (0, common_1.Post)(':eventId/upload-banner'),
+    (0, common_1.UseGuards)(event_auth_guard_1.EventEditGuard),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file', {
         storage: (0, multer_1.diskStorage)({
             destination: (req, file, cb) => {
-                const eventId = req.params.eventId;
-                const uploadPath = `./public/images/events/${eventId}`;
-                fs.mkdirSync(uploadPath, { recursive: true });
-                cb(null, uploadPath);
+                if (!req.params.eventId) {
+                    throw new common_1.BadRequestException('Event ID is required');
+                }
+                const path = './public/images/events/' + req.params.eventId;
+                fs.mkdirSync(path, { recursive: true });
+                cb(null, path);
             },
             filename: (req, file, cb) => {
                 const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
                 cb(null, uniqueSuffix + (0, path_1.extname)(file.originalname));
-            },
-        }),
+            }
+        })
     })),
     __param(0, (0, common_1.Param)('eventId')),
-    __param(1, (0, common_1.UploadedFile)()),
+    __param(1, (0, common_1.UploadedFile)(new common_1.ParseFilePipe({ fileIsRequired: true }))),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
-], EventsController.prototype, "uploadFile", null);
+], EventsController.prototype, "uploadBanner", null);
 exports.EventsController = EventsController = __decorate([
     (0, common_1.Controller)('events'),
     __metadata("design:paramtypes", [events_service_1.EventsService,
         organizers_service_1.OrganizersService,
-        mail_schedules_service_1.MailSchedulesService])
+        mail_schedules_service_1.MailSchedulesService,
+        event_file_service_1.EventFileService])
 ], EventsController);
 //# sourceMappingURL=events.controller.js.map

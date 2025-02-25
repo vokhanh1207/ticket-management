@@ -1,5 +1,5 @@
 export declare enum UserRole {
-    Admin = "ADMIN",
-    OrganizerAdmin = "ORGANIZER_ADMIN",
-    Scanner = "SCANNER"
+    ADMIN = "ADMIN",
+    ORGANIZER_ADMIN = "ORGANIZER_ADMIN",
+    SCANNER = "SCANNER"
 }

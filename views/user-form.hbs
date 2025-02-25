@@ -1,0 +1,64 @@
+<div class="container">
+    <div class="d-flex justify-content-between mb-3">
+        <h2>{{#if userToEdit}}Edit{{else}}Add{{/if}} User</h2>
+    </div>
+    <div class="">
+        <form method="post" action="{{#if userToEdit}}/users/{{userToEdit.id}}/edit{{else}}/add-user{{/if}}" id="userForm">
+            {{#if message}}
+            <label class="text-danger">{{message}}</label>
+            {{/if}}
+
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" name="username" 
+                    value="{{#if userToEdit}}{{userToEdit.username}}{{/if}}"
+                    {{#if userToEdit}}readonly{{else}}required{{/if}}>
+            </div>
+
+            {{#unless userToEdit}}
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="text" class="form-control" id="password" name="password" required>
+            </div>
+            {{/unless}}
+
+            <div class="mb-3">
+                <label for="firstname" class="form-label">First name</label>
+                <input type="text" class="form-control" id="firstname" name="firstname" 
+                    value="{{#if userToEdit}}{{userToEdit.firstName}}{{/if}}" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="lastname" class="form-label">Last name</label>
+                <input type="text" class="form-control" id="lastname" name="lastname" 
+                    value="{{#if userToEdit}}{{userToEdit.lastName}}{{/if}}" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="role" class="form-label">Role</label>
+                <select name="role" class="form-control">
+                    {{#each roles}}
+                        <option value="{{this}}" {{#if (eq this ../userToEdit.role)}}selected{{/if}}>{{this}}</option>
+                    {{/each}}
+                </select>
+            </div>
+
+            {{#if (eq user.role 'ADMIN')}}
+            <div class="mb-3">
+                <label for="organizerId" class="form-label">Organization</label>
+                <select name="organizerId" class="form-control" required>
+                    <option value="">Select Organization</option>
+                    {{#each organizers}}
+                        <option value="{{this.id}}" {{#if (eq this.id ../userToEdit.organizerId)}}selected{{/if}}>
+                            {{this.name}}
+                        </option>
+                    {{/each}}
+                </select>
+            </div>
+            {{/if}}
+
+            <button type="submit" class="btn btn-primary">{{#if userToEdit}}Update{{else}}Save{{/if}}</button>
+            <a href="/users" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>

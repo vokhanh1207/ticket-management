@@ -53,15 +53,15 @@ export class UserRepository extends Repository<User> {
 
     private validateAssignedRole(assignedRole: string, currentUser: User): boolean {
         switch (assignedRole) {
-            case UserRole.Admin:
-                if (currentUser.role !== UserRole.Admin) {
+            case UserRole.ADMIN:
+                if (currentUser.role !== UserRole.ADMIN) {
                     return false;
                 } else {
                     return true;
                 }
 
-            case UserRole.OrganizerAdmin:
-                if (currentUser.role !== UserRole.Admin && currentUser.role !== UserRole.OrganizerAdmin) {
+            case UserRole.ORGANIZER_ADMIN:
+                if (currentUser.role !== UserRole.ADMIN && currentUser.role !== UserRole.ORGANIZER_ADMIN) {
                     return false;
                 } else {
                     return true;

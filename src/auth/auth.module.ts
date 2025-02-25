@@ -16,7 +16,7 @@ import { SessionSerializer } from './utils/SessionSerializer';
     providers: [{
         provide: 'AUTH_SERVICE',
         useClass: AuthService
-    }, UserRepository, LocalStrategy, SessionSerializer],
-    exports: [LocalStrategy]
+    }, AuthService, UserRepository, LocalStrategy, SessionSerializer],
+    exports: [AuthService, LocalStrategy]
 })
 export class AuthModule {}
