@@ -95,11 +95,11 @@
             holderName.textContent = `${ticket.firstName || ''} ${ticket.lastName || ''}`.trim() || '-';
             holderEmail.textContent = ticket.email || '-';
             ticketStatus.innerHTML = `<span class="status status-${ticket.status}">${ticket.status}</span>`;
-            
+
             if (ticket.checkInTime) {
                 checkinTime.textContent = moment(ticket.checkInTime).format('DD/MM/YYYY HH:mm:ss');
             }
-            
+
             if (ticket.checkOutTime) {
                 checkoutTime.textContent = moment(ticket.checkOutTime).format('DD/MM/YYYY HH:mm:ss');
             }
@@ -126,9 +126,9 @@
 
     function processScanResult(result) {
         const currentTime = Date.now();
-        
+
         // Check if same code was scanned recently
-        if (lastScannedCode === result.data && 
+        if (lastScannedCode === result.data &&
             currentTime - lastScannedTime < DEBOUNCE_DELAY) {
             return; // Ignore duplicate scan within debounce period
         }
@@ -193,7 +193,14 @@
         maxScansPerSecond: 2
     });
 
+    const updateFlashAvailability = () => {
+        scanner.hasFlash().then(hasFlash => {
+            camHasFlash.textContent = hasFlash;
+            flashToggle.style.display = hasFlash ? 'inline-block' : 'none';
+        });
+    };
     scanner.start().then(() => {
+        updateFlashAvailability();
         // List cameras after the scanner started to avoid listCamera's stream and the scanner's stream being requested
         // at the same time which can result in listCamera's unconstrained stream also being offered to the scanner.
         // Note that we can also start the scanner after listCameras, we just have it this way around in the demo to
@@ -206,6 +213,9 @@
         }));
     });
 
+    camList.addEventListener('change', event => {
+        scanner.setCamera(event.target.value).then(updateFlashAvailability);
+    });
     // QrScanner.hasCamera().then(hasCamera => camHasCamera.textContent = hasCamera);
 
 </script>
