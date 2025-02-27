@@ -16,6 +16,7 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;400;600;800&family=Open+Sans:wght@300;400;500;600;700;800&display=swap"
     rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 </head>
 
 <body>
@@ -29,13 +30,16 @@
         </a>
 
         <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-          <li><a href="/events" class="nav-link px-2 text-white">Events</a></li>
+          <li><a href="/events" class="nav-link px-2 text-white {{#if (eq active 'events')}}active{{/if}}">Events</a></li>
           {{#if user}}
             {{#if (eq user.role 'ADMIN')}}
-              <li><a href="/organizers" class="nav-link px-2 text-white">Organizations</a></li>
+              <li><a href="/organizers" class="nav-link px-2 text-white {{#if (eq active 'organizers')}}active{{/if}}">Organizations</a></li>
             {{/if}}
             {{#if (or (eq user.role 'ADMIN') (eq user.role 'ORGANIZER_ADMIN'))}}
-              <li><a href="/users" class="nav-link px-2 text-white">Users</a></li>
+              <li><a href="/users" class="nav-link px-2 text-white {{#if (eq active 'users')}}active{{/if}}">Users</a></li>
+            {{/if}}
+            {{#if (or (or (eq user.role 'ADMIN') (eq user.role 'ORGANIZER_ADMIN')) (eq user.role 'SCANNER'))}}
+              <li><a href="/scan" class="nav-link px-2 text-white {{#if (eq active 'scan')}}active{{/if}}"">Scan</a></li>
             {{/if}}
           {{/if}}
         </ul>

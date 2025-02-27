@@ -1,0 +1,211 @@
+<div class="container">
+    <div class="d-flex justify-content-between mb-3">
+        <h2>QR Scan</h2>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-6">
+            <div class="mb-3">
+                <label for="status" class="form-label">Select camera</label>
+                <select id="cam-list" class="form-select">
+                    <option value="environment" selected>Environment Facing (default)</option>
+                    <option value="user">User Facing</option>
+                </select>
+            </div>
+            <video id="qr-video" style="width: 100%;"></video>
+        </div>
+        <div class="col-xl-6">
+            <div id="cam-qr-result" class="text-center mt-3"></div>
+            <div id="ticket-details" class="mt-4" style="display: none;">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Ticket Details</h5>
+                        <div class="row mb-2">
+                            <div class="col-4 text-muted">Name:</div>
+                            <div class="col-8" id="holder-name"></div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-4 text-muted">Email:</div>
+                            <div class="col-8" id="holder-email"></div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-4 text-muted">Status:</div>
+                            <div class="col-8" id="ticket-status"></div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-4 text-muted">Check-in:</div>
+                            <div class="col-8" id="checkin-time"></div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-4 text-muted">Check-out:</div>
+                            <div class="col-8" id="checkout-time"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import QrScanner from "/js/qr-scanner.min.js";
+    const video = document.getElementById('qr-video');
+    const camQrResult = document.getElementById('cam-qr-result');
+    const camList = document.getElementById('cam-list');
+    let clearDetailTimeout = null;
+
+    function getResultIcon(messageCode, isError = false) {
+        if (isError) {
+            return '<i class="fa fa-exclamation mb-3" aria-hidden="true" style="font-size: 80px; color: red"></i>';
+        }
+
+        const iconMap = {
+            'CHECKED-IN': '<i class="fa fa-check-circle-o" aria-hidden="true" style="font-size: 80px; color: rgb(69, 200, 85)"></i>',
+            'CHECKED-OUT': '<i class="fa fa-check-circle-o" aria-hidden="true" style="font-size: 80px; color: rgb(69, 200, 85)"></i>',
+            'USED': '<i class="fa fa-ban mb-3" aria-hidden="true" style="font-size: 80px; color: red"></i>',
+            'EXPIRED': '<i class="fa fa-ban mb-3" aria-hidden="true" style="font-size: 80px; color: red"></i>',
+            'NOT-VALID': '<i class="fa fa-exclamation mb-3" aria-hidden="true" style="font-size: 80px; color: red"></i>',
+            'default': '<i class="fa fa-exclamation mb-3" aria-hidden="true" style="font-size: 80px; color: red"></i>'
+        };
+
+        return iconMap[messageCode] || iconMap.default;
+    }
+
+    function showTicketDetails(ticket) {
+        if (clearDetailTimeout) {
+            clearTimeout(clearDetailTimeout);
+        }
+
+        const details = document.getElementById('ticket-details');
+        const holderName = document.getElementById('holder-name');
+        const holderEmail = document.getElementById('holder-email');
+        const ticketStatus = document.getElementById('ticket-status');
+        const checkinTime = document.getElementById('checkin-time');
+        const checkoutTime = document.getElementById('checkout-time');
+
+        // Clear previous values
+        holderName.textContent = '';
+        holderEmail.textContent = '';
+        ticketStatus.textContent = '';
+        checkinTime.textContent = '-';
+        checkoutTime.textContent = '-';
+
+        // Set new values
+        if (ticket) {
+            holderName.textContent = `${ticket.firstName || ''} ${ticket.lastName || ''}`.trim() || '-';
+            holderEmail.textContent = ticket.email || '-';
+            ticketStatus.innerHTML = `<span class="status status-${ticket.status}">${ticket.status}</span>`;
+            
+            if (ticket.checkInTime) {
+                checkinTime.textContent = moment(ticket.checkInTime).format('DD/MM/YYYY HH:mm:ss');
+            }
+            
+            if (ticket.checkOutTime) {
+                checkoutTime.textContent = moment(ticket.checkOutTime).format('DD/MM/YYYY HH:mm:ss');
+            }
+
+            details.style.display = 'block';
+        } else {
+            details.style.display = 'none';
+        }
+        // Restart scanner after delay
+        clearDetailTimeout = window.setTimeout(() => {
+            camQrResult.innerHTML = '';
+            showTicketDetails(null);
+        }, 4000);
+    }
+
+    let lastScannedCode = null;
+    let lastScannedTime = 0;
+    const DEBOUNCE_DELAY = 10000; // 10 seconds delay between scans of the same QR code
+
+    function handleSessionExpired() {
+        scanner.stop();
+        window.location.href = '/login?returnUrl=' + encodeURIComponent(window.location.pathname);
+    }
+
+    function processScanResult(result) {
+        const currentTime = Date.now();
+        
+        // Check if same code was scanned recently
+        if (lastScannedCode === result.data && 
+            currentTime - lastScannedTime < DEBOUNCE_DELAY) {
+            return; // Ignore duplicate scan within debounce period
+        }
+
+        // Update last scan tracking
+        lastScannedCode = result.data;
+        lastScannedTime = currentTime;
+
+        const url = result.data;
+        const regex = /tickets\/([a-f0-9-]+)\/on-scan/;
+        const match = url.match(regex);
+
+        if (!match) {
+            showScanResult('Invalid QR code format', true);
+            return;
+        }
+
+        const ticketId = match[1];
+        fetch(`/tickets/${ticketId}/on-scan-api`)
+            .then(res => {
+                if (res.status === 401 || res.status === 403) {
+                    handleSessionExpired();
+                    return;
+                }
+                return res.json();
+            })
+            .then(response => {
+                if (!response) return; // Handle if response was undefined due to session expired
+
+                if (!response.success) {
+                    showScanResult(response.message, true);
+                    showTicketDetails(null); // Hide details on error
+                    return;
+                }
+
+                if (response.message && response.data && response.data.ticket) {
+                    showScanResult(response.message.value, false, response.message.code);
+                    showTicketDetails(response.data.ticket);
+                }
+            })
+            .catch(error => {
+                console.error('Scan error:', error); // Debug log
+                showScanResult('Failed to process scan. Please try logging in again.', true);
+                setTimeout(handleSessionExpired, 2000);
+            });
+    }
+
+    function showScanResult(message, isError = false, messageCode = 'default') {
+        const icon = getResultIcon(messageCode, isError);
+        camQrResult.innerHTML = `
+            ${icon}
+            <h2>${message}</h2>
+        `;
+    }
+
+    const scanner = new QrScanner(video, processScanResult, {
+        onDecodeError: error => {
+            console.log(error);
+        },
+        highlightScanRegion: true,
+        highlightCodeOutline: true,
+        maxScansPerSecond: 2
+    });
+
+    scanner.start().then(() => {
+        // List cameras after the scanner started to avoid listCamera's stream and the scanner's stream being requested
+        // at the same time which can result in listCamera's unconstrained stream also being offered to the scanner.
+        // Note that we can also start the scanner after listCameras, we just have it this way around in the demo to
+        // start the scanner earlier.
+        QrScanner.listCameras(true).then(cameras => cameras.forEach(camera => {
+            const option = document.createElement('option');
+            option.value = camera.id;
+            option.text = camera.label;
+            camList.add(option);
+        }));
+    });
+
+    // QrScanner.hasCamera().then(hasCamera => camHasCamera.textContent = hasCamera);
+
+</script>

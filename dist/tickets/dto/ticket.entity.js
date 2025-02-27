@@ -53,6 +53,14 @@ __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Ticket.prototype, "status", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Ticket.prototype, "firstName", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Ticket.prototype, "lastName", void 0);
 exports.Ticket = Ticket = __decorate([
     (0, typeorm_1.Entity)()
 ], Ticket);

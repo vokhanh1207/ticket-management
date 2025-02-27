@@ -36,7 +36,11 @@ let EventsController = exports.EventsController = class EventsController {
     }
     async showEvents(res, req) {
         const events = await this.eventsService.getEvents();
-        return res.render('events', { events, user: req.user });
+        return res.render('events', {
+            events,
+            user: req.user,
+            active: 'events'
+        });
     }
     async showNewEvents(res, req) {
         if (!req.user) {

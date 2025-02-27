@@ -10,5 +10,7 @@ export declare class TicketsController {
     showEditTicket(id: string, res: Response, req: Request): Promise<void>;
     editTicket(id: string, res: Response, req: Request, createTicketDto: CreateTicketDto): Promise<void>;
     checkinTicket(id: string, res: Response, req: Request): Promise<void>;
+    onScanTicket(id: string, res: Response): Promise<Response<any, Record<string, any>>>;
+    checkinTicketApi(id: string, res: Response, req: Request): Promise<Response<any, Record<string, any>>>;
     checkoutTicket(id: string, res: Response, req: Request): Promise<void>;
 }

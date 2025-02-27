@@ -3,16 +3,17 @@ import { Response, Request } from 'express';
 import { UsersService } from './users.service';
 import { User } from '../auth/user.entity';
 import { UserRole } from '../auth/constants/user-role.constant';
-import { AdminGuard } from './guards/admin.guard';
 import { OrganizationAdminGuard } from './guards/organization-admin.guard';
 import { AuthService } from '../auth/auth.service';
 import { CreateUserDto } from '../auth/dto/auth-credentials.dto';
+import { OrganizersService } from 'src/organizers/organizers.service';
 
 @Controller('users')
 export class UsersController {
     constructor(
         private usersService: UsersService,
-        private authService: AuthService
+        private authService: AuthService,
+        private organizerService: OrganizersService
     ) {}
 
     @Get()
@@ -27,7 +28,8 @@ export class UsersController {
             return res.render('users', { 
                 users, 
                 user: currentUser,
-                canManageAdmins: currentUser.role === UserRole.ADMIN 
+                canManageAdmins: currentUser.role === UserRole.ADMIN,
+                active: 'users'  // Add active state
             });
         } catch (error) {
             console.error(error);
@@ -156,4 +158,63 @@ export class UsersController {
             });
         }
     }
+
+
+  @Get('add-user')
+  async showAddUser(@Res() res: Response, @Req() req: Request, @Body() userDto: CreateUserDto) {
+    if (!req.user && (req.user as User)?.role !== UserRole.ADMIN && (req.user as User)?.role !== UserRole.ORGANIZER_ADMIN) {
+      return res.redirect('/events');
+    }
+    const organizers = await this.organizerService.getOrganizers();
+    let roles = Object.values(UserRole);
+
+    if ((req.user as User).role === UserRole.ORGANIZER_ADMIN) {
+      roles = roles.filter(item => item !== UserRole.ADMIN);
+    }
+
+    return res.render('user-form', {  // Changed from add-user to user-form
+      user: req.user,
+      roles,
+      organizers
+    });
+  }
+
+  @Post('add-user')
+  async addUser(@Res() res: Response, @Req() req: Request, @Body() userDto: CreateUserDto) {
+    if (!req.user) {
+      return res.redirect('/events');
+    }
+    const currentUser = req.user as User;
+    
+    try {
+        // For ORGANIZER_ADMIN, automatically set organizerId from current user
+        if (currentUser.role === UserRole.ORGANIZER_ADMIN) {
+            if (userDto.role === UserRole.ADMIN) {
+                throw new Error('You are not allowed to assign the admin role to a user.');
+            }
+            userDto.organizerId = currentUser.organizerId;
+        }
+
+        const user = await this.authService.signUp(userDto, currentUser);
+        return res.render('user-form', {  // Changed from add-user to user-form
+            user: currentUser, 
+            message: 'User created successfully',
+            roles: Object.values(UserRole).filter(role => 
+                currentUser.role === UserRole.ADMIN || role !== UserRole.ADMIN
+            ),
+            organizers: currentUser.role === UserRole.ADMIN ? 
+                await this.organizerService.getOrganizers() : []
+        });
+    } catch (error) {
+        return res.render('user-form', {  // Changed from add-user to user-form
+            user: currentUser, 
+            message: error.message,
+            roles: Object.values(UserRole).filter(role => 
+                currentUser.role === UserRole.ADMIN || role !== UserRole.ADMIN
+            ),
+            organizers: currentUser.role === UserRole.ADMIN ? 
+                await this.organizerService.getOrganizers() : []
+        });
+    }
+  }
 }

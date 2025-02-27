@@ -19,10 +19,12 @@ const user_role_constant_1 = require("../auth/constants/user-role.constant");
 const organization_admin_guard_1 = require("./guards/organization-admin.guard");
 const auth_service_1 = require("../auth/auth.service");
 const auth_credentials_dto_1 = require("../auth/dto/auth-credentials.dto");
+const organizers_service_1 = require("../organizers/organizers.service");
 let UsersController = exports.UsersController = class UsersController {
-    constructor(usersService, authService) {
+    constructor(usersService, authService, organizerService) {
         this.usersService = usersService;
         this.authService = authService;
+        this.organizerService = organizerService;
     }
     async showUsers(res, req) {
         const currentUser = req.user;
@@ -33,7 +35,8 @@ let UsersController = exports.UsersController = class UsersController {
             return res.render('users', {
                 users,
                 user: currentUser,
-                canManageAdmins: currentUser.role === user_role_constant_1.UserRole.ADMIN
+                canManageAdmins: currentUser.role === user_role_constant_1.UserRole.ADMIN,
+                active: 'users'
             });
         }
         catch (error) {
@@ -128,6 +131,52 @@ let UsersController = exports.UsersController = class UsersController {
             });
         }
     }
+    async showAddUser(res, req, userDto) {
+        if (!req.user && req.user?.role !== user_role_constant_1.UserRole.ADMIN && req.user?.role !== user_role_constant_1.UserRole.ORGANIZER_ADMIN) {
+            return res.redirect('/events');
+        }
+        const organizers = await this.organizerService.getOrganizers();
+        let roles = Object.values(user_role_constant_1.UserRole);
+        if (req.user.role === user_role_constant_1.UserRole.ORGANIZER_ADMIN) {
+            roles = roles.filter(item => item !== user_role_constant_1.UserRole.ADMIN);
+        }
+        return res.render('user-form', {
+            user: req.user,
+            roles,
+            organizers
+        });
+    }
+    async addUser(res, req, userDto) {
+        if (!req.user) {
+            return res.redirect('/events');
+        }
+        const currentUser = req.user;
+        try {
+            if (currentUser.role === user_role_constant_1.UserRole.ORGANIZER_ADMIN) {
+                if (userDto.role === user_role_constant_1.UserRole.ADMIN) {
+                    throw new Error('You are not allowed to assign the admin role to a user.');
+                }
+                userDto.organizerId = currentUser.organizerId;
+            }
+            const user = await this.authService.signUp(userDto, currentUser);
+            return res.render('user-form', {
+                user: currentUser,
+                message: 'User created successfully',
+                roles: Object.values(user_role_constant_1.UserRole).filter(role => currentUser.role === user_role_constant_1.UserRole.ADMIN || role !== user_role_constant_1.UserRole.ADMIN),
+                organizers: currentUser.role === user_role_constant_1.UserRole.ADMIN ?
+                    await this.organizerService.getOrganizers() : []
+            });
+        }
+        catch (error) {
+            return res.render('user-form', {
+                user: currentUser,
+                message: error.message,
+                roles: Object.values(user_role_constant_1.UserRole).filter(role => currentUser.role === user_role_constant_1.UserRole.ADMIN || role !== user_role_constant_1.UserRole.ADMIN),
+                organizers: currentUser.role === user_role_constant_1.UserRole.ADMIN ?
+                    await this.organizerService.getOrganizers() : []
+            });
+        }
+    }
 };
 __decorate([
     (0, common_1.Get)(),
@@ -188,9 +237,28 @@ __decorate([
     __metadata("design:paramtypes", [String, Object, Object]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "deleteUser", null);
+__decorate([
+    (0, common_1.Get)('add-user'),
+    __param(0, (0, common_1.Res)()),
+    __param(1, (0, common_1.Req)()),
+    __param(2, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object, auth_credentials_dto_1.CreateUserDto]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "showAddUser", null);
+__decorate([
+    (0, common_1.Post)('add-user'),
+    __param(0, (0, common_1.Res)()),
+    __param(1, (0, common_1.Req)()),
+    __param(2, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object, auth_credentials_dto_1.CreateUserDto]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "addUser", null);
 exports.UsersController = UsersController = __decorate([
     (0, common_1.Controller)('users'),
     __metadata("design:paramtypes", [users_service_1.UsersService,
-        auth_service_1.AuthService])
+        auth_service_1.AuthService,
+        organizers_service_1.OrganizersService])
 ], UsersController);
 //# sourceMappingURL=users.controller.js.map

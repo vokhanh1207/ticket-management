@@ -95,3 +95,20 @@ header {
 textarea {
     height: 200px;
 }
+
+.nav-link.active {
+    color: #eb6864 !important;
+    position: relative;
+}
+
+.nav-link.active:after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 2px;
+    background-color: #eb6864;
+    border-radius: 2px;
+}

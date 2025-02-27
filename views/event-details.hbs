@@ -72,6 +72,16 @@
             <div class="text-info"><i class="fa fa-info-circle" aria-hidden="true"></i> By registering for the event,
               you acknowledge and agree that the organizer may send reminder emails to your provided email address.</div>
           </div>
+          <div class="row mb-3">
+            <div class="col-6">
+              <input type="text" placeholder="First Name" id="firstName" class="form-control" 
+                name="firstName" required />
+            </div>
+            <div class="col-6">
+              <input type="text" placeholder="Last Name" id="lastName" class="form-control" 
+                name="lastName" required />
+            </div>
+          </div>
           <div class="mb-3">
             <input type="email" placeholder="Email" id="email" class="form-control {{#if message}}is-invalid{{/if}}"
               name="email" required />

@@ -7,4 +7,6 @@ export declare class CreateTicketDto {
     checkInTime?: string;
     checkOutTime?: string;
     status?: TicketStatus;
+    firstName: string;
+    lastName: string;
 }

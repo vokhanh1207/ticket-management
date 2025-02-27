@@ -44,11 +44,9 @@ let TicketsService = exports.TicketsService = class TicketsService {
             }
         });
         if (updatedTicket.checkInTime) {
-            console.log('updatedTicket.checkInTime', updatedTicket.checkInTime);
             dbTicket.checkInTime = moment(updatedTicket.checkInTime).toDate().toISOString();
         }
         if (updatedTicket.checkOutTime) {
-            console.log('dbTicket.checkOutTime', updatedTicket.checkOutTime);
             dbTicket.checkOutTime = moment(updatedTicket.checkOutTime).toDate().toISOString();
         }
         if (updatedTicket.status) {
@@ -62,6 +60,8 @@ let TicketsService = exports.TicketsService = class TicketsService {
             eventId: createTicketDto.eventId,
             seat: createTicketDto.seat,
             email: createTicketDto.email,
+            firstName: createTicketDto.firstName,
+            lastName: createTicketDto.lastName,
             status: constants_1.TicketStatus.Active,
             createdAt: moment(new Date).toDate().toISOString()
         });
@@ -73,7 +73,6 @@ let TicketsService = exports.TicketsService = class TicketsService {
         dbTicket.qr = `${origin}/images/events/${event.id}/tickets/${ticket.id}.png`;
         await this.ticketsRepository.save(dbTicket);
         const mailOptions = this.getTicketMailOptions(dbTicket, event, origin);
-        this.mailService.sendMail(mailOptions);
         return ticket;
     }
     async sendRemindEmails(event, origin) {

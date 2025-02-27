@@ -32,4 +32,10 @@ export class Ticket {
 
     @Column({ nullable: true })
     status?: string;
+
+    @Column({ nullable: true })
+    firstName?: string;
+
+    @Column({ nullable: true })
+    lastName?: string;
 }

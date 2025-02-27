@@ -9,4 +9,6 @@ export declare class Ticket {
     checkInTime?: string;
     checkOutTime?: string;
     status?: string;
+    firstName?: string;
+    lastName?: string;
 }

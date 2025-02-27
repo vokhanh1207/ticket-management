@@ -20,6 +20,8 @@ const constants_1 = require("./constants");
 const user_role_constant_1 = require("../auth/constants/user-role.constant");
 const create_ticket_dto_1 = require("./dto/create-ticket.dto");
 const moment = require("moment");
+const organization_admin_guard_1 = require("../users/guards/organization-admin.guard");
+const scanner_guard_1 = require("../auth/guards/scanner.guard");
 let TicketsController = exports.TicketsController = class TicketsController {
     constructor(ticketsService, eventsService) {
         this.ticketsService = ticketsService;
@@ -116,6 +118,83 @@ let TicketsController = exports.TicketsController = class TicketsController {
             user: req.user
         });
     }
+    async onScanTicket(id, res) {
+        try {
+            const ticket = await this.ticketsService.getTicketById(id);
+            const event = await this.eventsService.getEventById(ticket.eventId);
+            return res.status(common_1.HttpStatus.OK).json({
+                success: true,
+                message: 'Ticket found',
+                data: { ticket, event }
+            });
+        }
+        catch (error) {
+            const status = error instanceof common_1.NotFoundException ?
+                common_1.HttpStatus.NOT_FOUND : common_1.HttpStatus.INTERNAL_SERVER_ERROR;
+            return res.status(status).json({
+                success: false,
+                message: error.message,
+                data: null
+            });
+        }
+    }
+    async checkinTicketApi(id, res, req) {
+        try {
+            const user = req.user;
+            if (!user || !user.id) {
+                return res.status(common_1.HttpStatus.UNAUTHORIZED).json({
+                    success: false,
+                    message: 'Session expired. Please login again.',
+                    data: null
+                });
+            }
+            let ticket = await this.ticketsService.getTicketById(id);
+            const event = await this.eventsService.getEventById(ticket.eventId);
+            if (user.role !== user_role_constant_1.UserRole.ADMIN && user.organizerId !== event.organizerId) {
+                return res.status(common_1.HttpStatus.FORBIDDEN).json({
+                    success: false,
+                    message: 'Your organization does not organize this event.',
+                    data: null
+                });
+            }
+            let messageCode;
+            let messageText;
+            if (ticket.status === constants_1.TicketStatus.Used) {
+                messageCode = 'USED';
+                messageText = 'The ticket is already used.';
+            }
+            else if (ticket.status === constants_1.TicketStatus.Expired) {
+                messageCode = 'EXPIRED';
+                messageText = 'The ticket is expired.';
+            }
+            else if (ticket.status === constants_1.TicketStatus.CheckedIn) {
+                ticket.status = constants_1.TicketStatus.Used;
+                ticket.checkOutTime = moment(new Date()).toDate().toISOString();
+                ticket = await this.ticketsService.updateTicket(ticket.id, ticket);
+                messageCode = 'CHECKED-OUT';
+                messageText = 'Checked out.';
+            }
+            else {
+                ticket.status = constants_1.TicketStatus.CheckedIn;
+                ticket.checkInTime = moment(new Date()).toDate().toISOString();
+                ticket = await this.ticketsService.updateTicket(ticket.id, ticket);
+                messageCode = 'CHECKED-IN';
+                messageText = 'Verified!';
+            }
+            return res.status(common_1.HttpStatus.OK).json({
+                success: true,
+                message: { value: messageText, code: messageCode },
+                data: { ticket, event }
+            });
+        }
+        catch (error) {
+            return res.status(common_1.HttpStatus.INTERNAL_SERVER_ERROR).json({
+                success: false,
+                message: error.message || 'Session expired. Please login again.',
+                data: null
+            });
+        }
+    }
     async checkoutTicket(id, res, req) {
         if (!req.user) {
             return res.redirect(`/tickets/${id}`);
@@ -170,6 +249,7 @@ __decorate([
 ], TicketsController.prototype, "editTicket", null);
 __decorate([
     (0, common_1.Get)('/:id/on-scan'),
+    (0, common_1.UseGuards)(organization_admin_guard_1.OrganizationAdminGuard),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Res)()),
     __param(2, (0, common_1.Req)()),
@@ -177,6 +257,24 @@ __decorate([
     __metadata("design:paramtypes", [String, Object, Object]),
     __metadata("design:returntype", Promise)
 ], TicketsController.prototype, "checkinTicket", null);
+__decorate([
+    (0, common_1.Get)(':id/on-scan'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], TicketsController.prototype, "onScanTicket", null);
+__decorate([
+    (0, common_1.Get)('/:id/on-scan-api'),
+    (0, common_1.UseGuards)(scanner_guard_1.ScannerGuard),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Res)()),
+    __param(2, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object, Object]),
+    __metadata("design:returntype", Promise)
+], TicketsController.prototype, "checkinTicketApi", null);
 __decorate([
     (0, common_1.Get)('/:id/check-out'),
     __param(0, (0, common_1.Param)('id')),

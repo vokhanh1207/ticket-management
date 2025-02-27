@@ -36,7 +36,11 @@ export class EventsController {
     @Get()
     async showEvents(@Res() res: Response, @Req() req: RequestWithUser) {
         const events = await this.eventsService.getEvents();
-        return res.render('events', { events, user: req.user });
+        return res.render('events', { 
+            events, 
+            user: req.user,
+            active: 'events'  // Add active menu indicator
+        });
     }
 
     @Get('new')

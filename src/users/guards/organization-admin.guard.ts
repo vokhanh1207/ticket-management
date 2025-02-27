@@ -8,11 +8,13 @@ export class OrganizationAdminGuard implements CanActivate {
         const user = request.user;
 
         if (!user) {
-            throw new ForbiddenException('Not authenticated');
+            // throw new ForbiddenException('Not authenticated');
+            return false;
         }
 
         if (user.role !== UserRole.ADMIN && user.role !== UserRole.ORGANIZER_ADMIN) {
-            throw new ForbiddenException('Insufficient permissions');
+            // throw new ForbiddenException('Insufficient permissions');
+            return false;
         }
 
         return true;

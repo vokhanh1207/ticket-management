@@ -3,7 +3,7 @@
         <h2>{{#if userToEdit}}Edit{{else}}Add{{/if}} User</h2>
     </div>
     <div class="">
-        <form method="post" action="{{#if userToEdit}}/users/{{userToEdit.id}}/edit{{else}}/add-user{{/if}}" id="userForm">
+        <form method="post" action="{{#if userToEdit}}/users/{{userToEdit.id}}/edit{{else}}/users/add-user{{/if}}" id="userForm">
             {{#if message}}
             <label class="text-danger">{{message}}</label>
             {{/if}}
@@ -36,7 +36,7 @@
 
             <div class="mb-3">
                 <label for="role" class="form-label">Role</label>
-                <select name="role" class="form-control">
+                <select name="role" class="form-select">
                     {{#each roles}}
                         <option value="{{this}}" {{#if (eq this ../userToEdit.role)}}selected{{/if}}>{{this}}</option>
                     {{/each}}
@@ -46,7 +46,7 @@
             {{#if (eq user.role 'ADMIN')}}
             <div class="mb-3">
                 <label for="organizerId" class="form-label">Organization</label>
-                <select name="organizerId" class="form-control" required>
+                <select name="organizerId" class="form-select" required>
                     <option value="">Select Organization</option>
                     {{#each organizers}}
                         <option value="{{this.id}}" {{#if (eq this.id ../userToEdit.organizerId)}}selected{{/if}}>

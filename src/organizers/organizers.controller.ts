@@ -23,7 +23,11 @@ export class OrganizersController {
         }
         try {
             const organizers = await this.organizersService.getOrganizers();
-            return res.render('organizers', { user: req.user, organizers }); 
+            return res.render('organizers', { 
+                user: req.user, 
+                organizers,
+                active: 'organizers'  // Add active state
+            }); 
         } catch (error) {
             console.log(error)
         }

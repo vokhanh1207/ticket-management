@@ -13,6 +13,5 @@ export declare class AppController {
     postLogin(body: AuthCredentialsDto, res: Response, req: Request, session: any): Promise<void>;
     getMyProfile(res: Response, req: Request): Promise<void>;
     updateMyProfile(res: Response, req: Request, userDto: CreateUserDto): Promise<void>;
-    showAddUser(res: Response, req: Request, userDto: CreateUserDto): Promise<void>;
-    addUser(res: Response, req: Request, userDto: CreateUserDto): Promise<void>;
+    showScanPage(res: Response, req: Request): Promise<void>;
 }
